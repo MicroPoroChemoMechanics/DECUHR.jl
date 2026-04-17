@@ -37,16 +37,18 @@
 #   ne       — denominator table, length emax; filled on first call
 #   beta     — coefficient table, size (emax+1, emax+1); filled on first call
 # ============================================================
-function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
-                       exstep::Int, n_terms::Int,
-                       t::AbstractMatrix, update::Int,
-                       unew::AbstractVector, qnew::AbstractVector,
-                       qold::AbstractVector,
-                       first_call::Ref{Bool}, emax::Int,
-                       uerr::AbstractMatrix,
-                       result::AbstractVector, abserr::AbstractVector,
-                       exterr::AbstractVector,
-                       ne::Vector{Float64}, beta::Matrix{Float64})
+function _extrapolate!(
+        numfun::Int, alpha::Float64, logf::Int, singul::Int,
+        exstep::Int, n_terms::Int,
+        t::AbstractMatrix, update::Int,
+        unew::AbstractVector, qnew::AbstractVector,
+        qold::AbstractVector,
+        first_call::Ref{Bool}, emax::Int,
+        uerr::AbstractMatrix,
+        result::AbstractVector, abserr::AbstractVector,
+        exterr::AbstractVector,
+        ne::Vector{Float64}, beta::Matrix{Float64}
+    )
 
     const_val = 10.0  # heuristic constant for error estimation (CONST in DEXTHR)
 
@@ -65,22 +67,22 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
         if logf == 1
             # Odd indices: apply exstep doublings of 2*x+1 from NE(I-2)
             for i in 3:2:emax
-                es = ne[i-2]
+                es = ne[i - 2]
                 for _ in 1:exstep
-                    es = 2.0*es + 1.0
+                    es = 2.0 * es + 1.0
                 end
                 ne[i] = es
             end
             # Even indices: copy from previous odd
             for i in 2:2:emax
-                ne[i] = ne[i-1]
+                ne[i] = ne[i - 1]
             end
         else
             # No log singularity: all consecutive
             for i in 2:emax
-                es = ne[i-1]
+                es = ne[i - 1]
                 for _ in 1:exstep
-                    es = 2.0*es + 1.0
+                    es = 2.0 * es + 1.0
                 end
                 ne[i] = es
             end
@@ -90,13 +92,13 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
         # BETA(0,J)=1; BETA(I,J)=BETA(I,J-1)+(BETA(I,J-1)-BETA(I-1,J-1))/NE(J)
         # for I=1..J; BETA(I,J)=0 for I=J+1..EMAX
         for j_f in 0:emax           # Fortran J = 0..EMAX
-            beta[1, j_f+1] = 1.0   # BETA(0,J) = 1
+            beta[1, j_f + 1] = 1.0   # BETA(0,J) = 1
             for i_f in 1:j_f
-                beta[i_f+1, j_f+1] = beta[i_f+1, j_f] +
-                    (beta[i_f+1, j_f] - beta[i_f, j_f]) / ne[j_f]
+                beta[i_f + 1, j_f + 1] = beta[i_f + 1, j_f] +
+                    (beta[i_f + 1, j_f] - beta[i_f, j_f]) / ne[j_f]
             end
-            for i_f in (j_f+1):emax
-                beta[i_f+1, j_f+1] = 0.0
+            for i_f in (j_f + 1):emax
+                beta[i_f + 1, j_f + 1] = 0.0
             end
         end
     end  # first_call
@@ -117,13 +119,13 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
                 t[j, i] = save1
                 save1 = save2
             end
-            t[j, steps+1] = save1   # T(J, STEPS)
+            t[j, steps + 1] = save1   # T(J, STEPS)
         end
 
     elseif update < n_terms - steps
         # Simple correction: add UNEW to all tableau entries
         for j in 1:numfun
-            for i in 1:(steps+1)   # i = Fortran I+1 for I=0..STEPS
+            for i in 1:(steps + 1)   # i = Fortran I+1 for I=0..STEPS
                 t[j, i] += unew[j]
             end
         end
@@ -135,8 +137,8 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
                 # Fortran first-dim index: N-UPDATE+1 (0-based)
                 # Clamp to valid range [0, EMAX] to avoid OOB
                 fbi = min(n_terms - update + 1, emax)
-                beta_val = beta[fbi+1, i_f+1]   # BETA(fbi, i_f)
-                t[j, i_f+1] += unew[j] * (1.0 - beta_val)
+                beta_val = beta[fbi + 1, i_f + 1]   # BETA(fbi, i_f)
+                t[j, i_f + 1] += unew[j] * (1.0 - beta_val)
             end
         end
     end
@@ -145,17 +147,17 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
     # Error estimates
     # -------------------------------------------------------
     for j in 1:numfun
-        exterr[j] = const_val * abs(t[j, steps+1] - t[j, steps])
-        qnew[j]   = exterr[j]
+        exterr[j] = const_val * abs(t[j, steps + 1] - t[j, steps])
+        qnew[j] = exterr[j]
 
         # Effect of U-term errors amplified by extrapolation
         for i in 1:steps
             # ABS(1 - BETA(I, STEPS)) * UERR(J, N+1-I)
-            qnew[j] += abs(1.0 - beta[i+1, steps+1]) * uerr[j, n_terms+1-i]
+            qnew[j] += abs(1.0 - beta[i + 1, steps + 1]) * uerr[j, n_terms + 1 - i]
         end
         # Remaining U-terms (beyond the extrapolation steps)
-        for i in (steps+1):n_terms
-            qnew[j] += uerr[j, n_terms+1-i]
+        for i in (steps + 1):n_terms
+            qnew[j] += uerr[j, n_terms + 1 - i]
         end
     end
 
@@ -164,10 +166,10 @@ function _extrapolate!(numfun::Int, alpha::Float64, logf::Int, singul::Int,
     # -------------------------------------------------------
     for j in 1:numfun
         if qnew[j] <= abserr[j]
-            result[j] = t[j, steps+1]
+            result[j] = t[j, steps + 1]
             abserr[j] = qnew[j]
         end
     end
 
-    nothing
+    return nothing
 end

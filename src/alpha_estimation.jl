@@ -21,16 +21,18 @@
 #   x_work    — work vector length ≥ ndim
 #   funs_work — work vector length ≥ numfun
 # ============================================================
-function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
-                          alpha_ref::Ref{Float64}, singul::Int,
-                          logf_ref::Ref{Int},
-                          funsub,
-                          x_work::Vector{Float64},
-                          funs_work::Vector{Float64})
-    bdg   = 10
-    l     = 10
+function _estimate_alpha!(
+        ndim::Int, a::AbstractVector, b::AbstractVector,
+        alpha_ref::Ref{Float64}, singul::Int,
+        logf_ref::Ref{Int},
+        funsub,
+        x_work::Vector{Float64},
+        funs_work::Vector{Float64}
+    )
+    bdg = 10
+    l = 10
     lgtwo = log(2.0)
-    ntot  = 2*bdg + l   # ratio table length; indices 0..ntot → Julia [1..ntot+1]
+    ntot = 2 * bdg + l   # ratio table length; indices 0..ntot → Julia [1..ntot+1]
     t_arr = zeros(Float64, ntot + 1)   # t_arr[j+1] = Fortran T(j)
 
     # -------------------------------------------------------
@@ -43,8 +45,8 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
     #     if sum|f|=0, go to 10 (restart from current H)
     #   T(J) = log(prev/curr) / log2
     # -------------------------------------------------------
-    h     = 1.0   # Fortran: H=2 then H=H/2 at label 10 → first value = 1
-    sumy  = 0.0
+    h = 1.0   # Fortran: H=2 then H=H/2 at label 10 → first value = 1
+    sumy = 0.0
     table_built = false
 
     for _restart in 1:500   # outer restart loop (Fortran GOTO 10)
@@ -69,7 +71,7 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
         inner_failed = false
         for j in 0:ntot
             sumx = sumy
-            h   /= 2
+            h /= 2
             for i in 1:singul
                 x_work[i] = a[i] + h * (b[i] - a[i])
             end
@@ -79,7 +81,7 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
                 inner_failed = true
                 break   # current h restarts the outer loop
             end
-            t_arr[j+1] = log(sumx / sumy) / lgtwo
+            t_arr[j + 1] = log(sumx / sumy) / lgtwo
         end
 
         if !inner_failed
@@ -97,11 +99,11 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
     # -------------------------------------------------------
     for i in 1:ntot
         n_val = 0
-        for j_val in (i-1):-1:max(0, i-l)
-            n_val     = 2*n_val + 1
+        for j_val in (i - 1):-1:max(0, i - l)
+            n_val = 2 * n_val + 1
             # T(j_val) = T(j_val+1) + (T(j_val+1)-T(j_val)) / n_val
-            t_arr[j_val+1] = t_arr[j_val+2] +
-                (t_arr[j_val+2] - t_arr[j_val+1]) / n_val
+            t_arr[j_val + 1] = t_arr[j_val + 2] +
+                (t_arr[j_val + 2] - t_arr[j_val + 1]) / n_val
         end
     end
 
@@ -109,41 +111,41 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
     # Step 3 : assign alpha and detect log term
     # T(2*BDG) = t_arr[2*bdg+1];  T(2*BDG-1) = t_arr[2*bdg]
     # -------------------------------------------------------
-    if abs(t_arr[2*bdg+1] - t_arr[2*bdg]) > 5e-6
+    if abs(t_arr[2 * bdg + 1] - t_arr[2 * bdg]) > 5.0e-6
         # Logarithmic term present
         logf_ref[] = 1
 
         # Step 3b : Bjorstad-Grosse-Dahlquist log-elimination
         # NB decreases by 2 from 2*BDG-2 until convergence or NB = 0
         signal = -1
-        nb     = 2*bdg   # immediately decremented to 2*bdg-2 in loop
+        nb = 2 * bdg   # immediately decremented to 2*bdg-2 in loop
         while true
-            nb  -= 2
-            itw  = 2*bdg - nb   # increments by 2 each step
+            nb -= 2
+            itw = 2 * bdg - nb   # increments by 2 each step
 
             # Estimate convergence order KEST
             if nb > 0
-                denom1 = t_arr[nb+2] + t_arr[nb]   - 2.0*t_arr[nb+1]
-                denom2 = t_arr[nb+3] + t_arr[nb+1] - 2.0*t_arr[nb+2]
-                term1  = abs(denom1) > 0.0 ?
-                         (t_arr[nb+2] - t_arr[nb+1]) / denom1 : 0.0
-                term2  = abs(denom2) > 0.0 ?
-                         (t_arr[nb+3] - t_arr[nb+2]) / denom2 : 0.0
-                kest   = -1.0 - 1.0 / (term2 - term1)
+                denom1 = t_arr[nb + 2] + t_arr[nb] - 2.0 * t_arr[nb + 1]
+                denom2 = t_arr[nb + 3] + t_arr[nb + 1] - 2.0 * t_arr[nb + 2]
+                term1 = abs(denom1) > 0.0 ?
+                    (t_arr[nb + 2] - t_arr[nb + 1]) / denom1 : 0.0
+                term2 = abs(denom2) > 0.0 ?
+                    (t_arr[nb + 3] - t_arr[nb + 2]) / denom2 : 0.0
+                kest = -1.0 - 1.0 / (term2 - term1)
             else
                 kest = 0.0
             end
 
             # Update tableau entries T(0)..T(NB)
             for j_val in 0:nb
-                denom = t_arr[j_val+3] + t_arr[j_val+1] - 2.0*t_arr[j_val+2]
+                denom = t_arr[j_val + 3] + t_arr[j_val + 1] - 2.0 * t_arr[j_val + 2]
                 if abs(denom) > 0.0
-                    t_arr[j_val+1] = t_arr[j_val+2] -
-                        itw * (t_arr[j_val+3] - t_arr[j_val+2]) *
-                              (t_arr[j_val+2] - t_arr[j_val+1]) /
-                              (denom * (itw - 1))
+                    t_arr[j_val + 1] = t_arr[j_val + 2] -
+                        itw * (t_arr[j_val + 3] - t_arr[j_val + 2]) *
+                        (t_arr[j_val + 2] - t_arr[j_val + 1]) /
+                        (denom * (itw - 1))
                 else
-                    t_arr[j_val+1] = t_arr[j_val+2]
+                    t_arr[j_val + 1] = t_arr[j_val + 2]
                 end
             end
 
@@ -155,14 +157,14 @@ function _estimate_alpha!(ndim::Int, a::AbstractVector, b::AbstractVector,
             (nb == signal || nb <= 0) && break
         end
 
-        index        = max(0, signal)   # safety: default to T(0) if never set
-        alpha_ref[]  = t_arr[index + 1]
+        index = max(0, signal)   # safety: default to T(0) if never set
+        alpha_ref[] = t_arr[index + 1]
 
     else
         # No log term: use T(L) as the best estimate of ALPHA
-        logf_ref[]  = 0
+        logf_ref[] = 0
         alpha_ref[] = t_arr[l + 1]   # T(L) in Fortran = t_arr[L+1]
     end
 
-    nothing
+    return nothing
 end

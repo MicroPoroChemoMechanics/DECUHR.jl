@@ -77,23 +77,25 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 | `ReturnCode.Failure`  | Invalid input parameters (see `sol.stats`) |
 """
 struct DecuhrAlgorithm <: SciMLBase.AbstractIntegralAlgorithm
-    key    :: Int
-    singul :: Int
-    alpha  :: Float64
-    logf   :: Int
-    wrksub :: Int
-    emax   :: Int
-    minpts :: Int
+    key::Int
+    singul::Int
+    alpha::Float64
+    logf::Int
+    wrksub::Int
+    emax::Int
+    minpts::Int
 end
 
-function DecuhrAlgorithm(; key    = 0,
-                           singul = 1,
-                           alpha  = -2.0,   # ≤ -singul triggers auto-estimation
-                           logf   = 0,
-                           wrksub = 5000,
-                           emax   = 20,
-                           minpts = 0)
-    DecuhrAlgorithm(key, singul, alpha, logf, wrksub, emax, minpts)
+function DecuhrAlgorithm(;
+        key = 0,
+        singul = 1,
+        alpha = -2.0,   # ≤ -singul triggers auto-estimation
+        logf = 0,
+        wrksub = 5000,
+        emax = 20,
+        minpts = 0
+    )
+    return DecuhrAlgorithm(key, singul, alpha, logf, wrksub, emax, minpts)
 end
 
 # ============================================================
@@ -109,25 +111,28 @@ const _MAXDIM = 15
 Low-level driver.  Validates parameters, optionally estimates `alpha`, then
 calls `_adaptive_integrate!`.  Returns `(result, abserr, neval, ifail)`.
 """
-function _decuhr_driver(ndim::Int, numfun::Int,
-                         a::AbstractVector, b::AbstractVector,
-                         minpts::Int, maxpts::Int,
-                         funsub, ::Type{TV},
-                         singul::Int, alpha_in::Float64, logf_in::Int,
-                         epsabs::Real, epsrel::Real,
-                         key::Int, wrksub::Int, emax::Int) where {TV}
+function _decuhr_driver(
+        ndim::Int, numfun::Int,
+        a::AbstractVector, b::AbstractVector,
+        minpts::Int, maxpts::Int,
+        funsub, ::Type{TV},
+        singul::Int, alpha_in::Float64, logf_in::Int,
+        epsabs::Real, epsrel::Real,
+        key::Int, wrksub::Int, emax::Int
+    ) where {TV}
 
     # --- Parameter validation ---
     num, maxsub, keyf, wtleng, ifail = _check_params(
         _MAXDIM, ndim, numfun, a, b, singul, logf_in,
-        minpts, maxpts, epsabs, epsrel, key, emax, wrksub)
+        minpts, maxpts, epsabs, epsrel, key, emax, wrksub
+    )
 
     if ifail != 0
         return zeros(TV, numfun), zeros(TV, numfun), 0, ifail
     end
 
     alpha = alpha_in
-    logf  = logf_in
+    logf = logf_in
 
     # --- Auto-estimate ALPHA (DECALP) when alpha ≤ -singul ---
     if alpha <= -Float64(singul)
@@ -137,13 +142,15 @@ function _decuhr_driver(ndim::Int, numfun::Int,
             return zeros(TV, numfun), zeros(TV, numfun), 0, 14
         end
         alpha_ref = Ref(alpha)
-        logf_ref  = Ref(logf)
-        x_work    = zeros(Float64, ndim)
+        logf_ref = Ref(logf)
+        x_work = zeros(Float64, ndim)
         funs_work = zeros(Float64, numfun)
-        _estimate_alpha!(ndim, a, b, alpha_ref, singul, logf_ref,
-                         funsub, x_work, funs_work)
+        _estimate_alpha!(
+            ndim, a, b, alpha_ref, singul, logf_ref,
+            funsub, x_work, funs_work
+        )
         alpha = alpha_ref[]
-        logf  = logf_ref[]
+        logf = logf_ref[]
 
         if alpha <= -Float64(singul)
             return zeros(TV, numfun), zeros(TV, numfun), 0, 14
@@ -155,7 +162,8 @@ function _decuhr_driver(ndim::Int, numfun::Int,
         ndim, numfun, a, b, maxsub, funsub, TV,
         singul, alpha, logf,
         Float64(epsabs), Float64(epsrel), keyf, num, wtleng,
-        emax, minpts, maxpts)
+        emax, minpts, maxpts
+    )
 
     return result, abserr, neval, ifail
 end
@@ -164,24 +172,25 @@ end
 # Integrals.__solvebp_call — Integrals.jl integration hook
 # ============================================================
 function Integrals.__solvebp_call(
-        cache    ::Integrals.IntegralCache,
-        alg      ::DecuhrAlgorithm,
+        cache::Integrals.IntegralCache,
+        alg::DecuhrAlgorithm,
         sensealg, domain, p;
-        abstol   = 1e-8,
-        reltol   = 1e-6,
+        abstol = 1.0e-8,
+        reltol = 1.0e-6,
         maxiters = 100_000,
-        kwargs...)
+        kwargs...
+    )
 
     lb, ub = domain
-    ndim   = length(lb)
-    f      = cache.f   # IntegralFunction wrapping the user's integrand
+    ndim = length(lb)
+    f = cache.f   # IntegralFunction wrapping the user's integrand
 
     # Detect numfun and value type TV via a single test evaluation at the midpoint.
     # TV may be a dual-number type when differentiating w.r.t. parameters p.
-    xmid     = (lb .+ ub) ./ 2
+    xmid = (lb .+ ub) ./ 2
     test_out = f(xmid, p)
-    numfun   = test_out isa Number ? 1 : length(test_out)
-    TV       = test_out isa Number ? typeof(test_out) : eltype(test_out)
+    numfun = test_out isa Number ? 1 : length(test_out)
+    TV = test_out isa Number ? typeof(test_out) : eltype(test_out)
 
     # Wrap SciML f(u, p) → DECUHR funsub(x, funvls).
     # funvls may be a SubArray (column-view from rules.jl); no type restriction.
@@ -198,7 +207,8 @@ function Integrals.__solvebp_call(
         funsub, TV,
         alg.singul, Float64(alg.alpha), alg.logf,
         abstol, reltol,
-        alg.key, alg.wrksub, alg.emax)
+        alg.key, alg.wrksub, alg.emax
+    )
 
     retcode = if ifail == 0
         SciMLBase.ReturnCode.Success
@@ -208,7 +218,7 @@ function Integrals.__solvebp_call(
         SciMLBase.ReturnCode.Failure
     end
 
-    u   = numfun == 1 ? result[1] : result
+    u = numfun == 1 ? result[1] : result
     err = numfun == 1 ? abserr[1] : abserr
 
     prob = Integrals.build_problem(cache)

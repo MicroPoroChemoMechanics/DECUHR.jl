@@ -20,16 +20,26 @@
 #   6=NUMFUN<1, 7=bad bounds, 8=MAXPTS<MINPTS, 9=both tols<0,
 #   11=bad SINGUL, 12=bad LOGF, 13=MAXPTS too small, 15=EMAX<1, 17=WRKSUB too small
 # ============================================================
-function _check_params(maxdim::Int, ndim::Int, numfun::Int,
-                       a::AbstractVector, b::AbstractVector,
-                       singul::Int, logf::Int,
-                       minpts::Int, maxpts::Int,
-                       epsabs::Real, epsrel::Real,
-                       key::Int, emax::Int, wrksub::Int)
-    if key < 0 || key > 4;        return 0, 0, 0, 0, 2;  end
-    if ndim < 2 || ndim > maxdim; return 0, 0, 0, 0, 3;  end
-    if key == 1 && ndim != 2;     return 0, 0, 0, 0, 4;  end
-    if key == 2 && ndim != 3;     return 0, 0, 0, 0, 5;  end
+function _check_params(
+        maxdim::Int, ndim::Int, numfun::Int,
+        a::AbstractVector, b::AbstractVector,
+        singul::Int, logf::Int,
+        minpts::Int, maxpts::Int,
+        epsabs::Real, epsrel::Real,
+        key::Int, emax::Int, wrksub::Int
+    )
+    if key < 0 || key > 4
+        return 0, 0, 0, 0, 2
+    end
+    if ndim < 2 || ndim > maxdim
+        return 0, 0, 0, 0, 3
+    end
+    if key == 1 && ndim != 2
+        return 0, 0, 0, 0, 4
+    end
+    if key == 2 && ndim != 3
+        return 0, 0, 0, 0, 5
+    end
 
     keyf = if key == 0
         ndim == 2 ? 1 : ndim == 3 ? 2 : 3
@@ -42,29 +52,47 @@ function _check_params(maxdim::Int, ndim::Int, numfun::Int,
     elseif keyf == 2
         127, 13
     elseif keyf == 3
-        pts = 1 + 2*ndim + 6*ndim^2 + 4*ndim*(ndim-1)*(ndim-2)÷3 + (1 << ndim)
-        wt  = ndim == 2 ? 8 : 9
+        pts = 1 + 2 * ndim + 6 * ndim^2 + 4 * ndim * (ndim - 1) * (ndim - 2) ÷ 3 + (1 << ndim)
+        wt = ndim == 2 ? 8 : 9
         pts, wt
     else   # keyf == 4
-        1 + 2*ndim*(ndim+2) + (1 << ndim), 6
+        1 + 2 * ndim * (ndim + 2) + (1 << ndim), 6
     end
 
-    if numfun < 1;                              return num, 0, keyf, wtleng, 6;  end
-    if any(a[j] >= b[j] for j in 1:ndim);      return num, 0, keyf, wtleng, 7;  end
-    if maxpts < minpts;                         return num, 0, keyf, wtleng, 8;  end
-    if epsabs < 0.0 && epsrel < 0.0;           return num, 0, keyf, wtleng, 9;  end
-    if singul < 1 || singul > ndim;            return num, 0, keyf, wtleng, 11; end
-    if logf < 0 || logf > 1;                   return num, 0, keyf, wtleng, 12; end
-    if maxpts < (singul + 2)*num;              return num, 0, keyf, wtleng, 13; end
-    if emax < 1;                               return num, 0, keyf, wtleng, 15; end
+    if numfun < 1
+        return num, 0, keyf, wtleng, 6
+    end
+    if any(a[j] >= b[j] for j in 1:ndim)
+        return num, 0, keyf, wtleng, 7
+    end
+    if maxpts < minpts
+        return num, 0, keyf, wtleng, 8
+    end
+    if epsabs < 0.0 && epsrel < 0.0
+        return num, 0, keyf, wtleng, 9
+    end
+    if singul < 1 || singul > ndim
+        return num, 0, keyf, wtleng, 11
+    end
+    if logf < 0 || logf > 1
+        return num, 0, keyf, wtleng, 12
+    end
+    if maxpts < (singul + 2) * num
+        return num, 0, keyf, wtleng, 13
+    end
+    if emax < 1
+        return num, 0, keyf, wtleng, 15
+    end
 
     # Compute MAXSUB (worst-case estimate)
-    csing  = (maxpts - num) ÷ ((singul + 1)*num)
-    c1     = (maxpts - num*(1 + (singul + 1)*csing)) ÷ (2*num)
-    c1     = c1 == 0 ? -1 : c1
-    maxsub = 2 + csing*singul + c1
+    csing = (maxpts - num) ÷ ((singul + 1) * num)
+    c1 = (maxpts - num * (1 + (singul + 1) * csing)) ÷ (2 * num)
+    c1 = c1 == 0 ? -1 : c1
+    maxsub = 2 + csing * singul + c1
 
-    if maxsub > wrksub; return num, maxsub, keyf, wtleng, 17; end
+    if maxsub > wrksub
+        return num, maxsub, keyf, wtleng, 17
+    end
 
     return num, maxsub, keyf, wtleng, 0
 end
@@ -77,14 +105,14 @@ end
 # Returns the new heap size (sbrgns - 1).
 # ============================================================
 function _heap_pop!(greate::AbstractVector, list::Vector{Int}, sbrgns::Int)::Int
-    great      = greate[list[sbrgns]]   # value of last element (will replace top)
+    great = greate[list[sbrgns]]   # value of last element (will replace top)
     new_sbrgns = sbrgns - 1
-    subrgn     = 1
+    subrgn = 1
     while true
         subtmp = 2 * subrgn
         subtmp > new_sbrgns && break
         # Choose the larger child
-        if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp+1]]
+        if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp + 1]]
             subtmp += 1
         end
         # Sift down if necessary
@@ -105,9 +133,11 @@ end
 # Inserts subregion `new_idx` (1-based Julia index) at heap position `new_pos`
 # (= new heap size after insertion) and sifts up.
 # ============================================================
-function _heap_push!(greate::AbstractVector, list::Vector{Int},
-                     new_pos::Int, new_idx::Int)
-    great  = greate[new_idx]
+function _heap_push!(
+        greate::AbstractVector, list::Vector{Int},
+        new_pos::Int, new_idx::Int
+    )
+    great = greate[new_idx]
     subrgn = new_pos
     while true
         subtmp = subrgn ÷ 2
@@ -120,7 +150,7 @@ function _heap_push!(greate::AbstractVector, list::Vector{Int},
         end
     end
     list[subrgn] = new_idx
-    nothing
+    return nothing
 end
 
 # ============================================================
@@ -146,24 +176,26 @@ end
 #
 # Returns: (result, abserr, neval, ifail)
 # ============================================================
-function _adaptive_integrate!(ndim::Int, numfun::Int,
-                               a::AbstractVector, b::AbstractVector,
-                               maxsub::Int, funsub, ::Type{TV},
-                               singul::Int, alpha::Float64, logf::Int,
-                               epsabs::Float64, epsrel::Float64,
-                               keyf::Int, num::Int, wtleng::Int,
-                               emax::Int, minpts::Int, maxpts::Int) where {TV}
+function _adaptive_integrate!(
+        ndim::Int, numfun::Int,
+        a::AbstractVector, b::AbstractVector,
+        maxsub::Int, funsub, ::Type{TV},
+        singul::Int, alpha::Float64, logf::Int,
+        epsabs::Float64, epsrel::Float64,
+        keyf::Int, num::Int, wtleng::Int,
+        emax::Int, minpts::Int, maxpts::Int
+    ) where {TV}
 
     # ------------------------------------------------------------------
     # Initialise integration rule (DEINHR)
     # Rule coefficients are pure geometry: always Float64.
     # ------------------------------------------------------------------
-    g      = zeros(Float64, ndim, wtleng)
-    w      = zeros(Float64, 5,    wtleng)
+    g = zeros(Float64, ndim, wtleng)
+    w = zeros(Float64, 5, wtleng)
     errcof = zeros(Float64, 6)
     rulpts = zeros(Float64, wtleng)
     scales = zeros(Float64, 3, wtleng)
-    norms  = zeros(Float64, 3, wtleng)
+    norms = zeros(Float64, 3, wtleng)
     _init_rule!(ndim, keyf, wtleng, w, g, errcof, rulpts, scales, norms)
 
     # ------------------------------------------------------------------
@@ -171,36 +203,36 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
     # Size maxsub+1 to hold singular (1) + maxsub non-singular regions.
     # Arrays holding integrand values are typed on TV; geometry stays Float64.
     # ------------------------------------------------------------------
-    sz     = maxsub + 1
-    values = zeros(TV,      numfun, sz)   # VALUES(NUMFUN, 0:MAXSUB)
-    errors = zeros(TV,      numfun, sz)   # ERRORS(NUMFUN, 0:MAXSUB)
-    centrs = zeros(Float64, ndim,   sz)   # CENTRS(NDIM,   0:MAXSUB)
-    hwidts = zeros(Float64, ndim,   sz)   # HWIDTS(NDIM,   0:MAXSUB)
-    greate = zeros(TV,      sz)           # GREATE(0:MAXSUB) — max error per region
-    dir    = zeros(Float64, sz)           # DIR(0:MAXSUB)    — direction index
+    sz = maxsub + 1
+    values = zeros(TV, numfun, sz)   # VALUES(NUMFUN, 0:MAXSUB)
+    errors = zeros(TV, numfun, sz)   # ERRORS(NUMFUN, 0:MAXSUB)
+    centrs = zeros(Float64, ndim, sz)   # CENTRS(NDIM,   0:MAXSUB)
+    hwidts = zeros(Float64, ndim, sz)   # HWIDTS(NDIM,   0:MAXSUB)
+    greate = zeros(TV, sz)           # GREATE(0:MAXSUB) — max error per region
+    dir = zeros(Float64, sz)           # DIR(0:MAXSUB)    — direction index
 
     # Extrapolation data — value arrays on TV; coefficient arrays stay Float64
-    q      = zeros(TV,      numfun, sz)        # Q(NUMFUN, 0:MAXSUB)
-    u      = zeros(TV,      numfun, maxsub)    # U(NUMFUN, MAXSUB)
-    e_mat  = zeros(TV,      numfun, maxsub)    # E(NUMFUN, MAXSUB)
-    t_tab  = zeros(TV,      numfun, emax + 1)  # T(NUMFUN, 0:EMAX)
-    ne     = zeros(Float64, emax)              # NE(EMAX)
-    beta   = zeros(Float64, emax + 1, emax + 1)# BETA(0:EMAX, 0:EMAX)
-    qold   = zeros(TV, numfun)
-    qnew   = zeros(TV, numfun)
-    unew   = zeros(TV, numfun)
+    q = zeros(TV, numfun, sz)        # Q(NUMFUN, 0:MAXSUB)
+    u = zeros(TV, numfun, maxsub)    # U(NUMFUN, MAXSUB)
+    e_mat = zeros(TV, numfun, maxsub)    # E(NUMFUN, MAXSUB)
+    t_tab = zeros(TV, numfun, emax + 1)  # T(NUMFUN, 0:EMAX)
+    ne = zeros(Float64, emax)              # NE(EMAX)
+    beta = zeros(Float64, emax + 1, emax + 1) # BETA(0:EMAX, 0:EMAX)
+    qold = zeros(TV, numfun)
+    qnew = zeros(TV, numfun)
+    unew = zeros(TV, numfun)
     uerr_s = zeros(TV, numfun)   # local UERR scratch (DEADHR's UERR)
     exterr = zeros(TV, numfun)
 
     # Heap and pointer arrays
-    list   = zeros(Int, maxsub)   # heap (1-based subregion indices)
+    list = zeros(Int, maxsub)   # heap (1-based subregion indices)
     upoint = zeros(Int, sz)       # maps subregion → U-sequence index
 
     # Work arrays — x_work stays Float64 (integration points are coordinates)
-    diff      = zeros(TV,      ndim)   # fourth-differences (may carry dual parts)
-    order     = collect(1:ndim)
-    x_work    = zeros(Float64, ndim)
-    null_work = zeros(TV,      numfun, 8)   # funsub output buffer
+    diff = zeros(TV, ndim)   # fourth-differences (may carry dual parts)
+    order = collect(1:ndim)
+    x_work = zeros(Float64, ndim)
+    null_work = zeros(TV, numfun, 8)   # funsub output buffer
 
     result = zeros(TV, numfun)
     abserr = zeros(TV, numfun)
@@ -211,29 +243,31 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
     for j in 1:ndim
         centrs[j, 1] = (a[j] + b[j]) / 2.0
         hwidts[j, 1] = abs(b[j] - a[j]) / 2.0
-        order[j]     = j
+        order[j] = j
     end
     dir[1] = Float64(-singul)   # DIR(0) = -SINGUL
 
     # Evaluate rule over the initial whole region
     let dref = Ref(dir[1]), gref = Ref{TV}(zero(TV))
-        _eval_rule!(ndim, view(centrs,:,1), view(hwidts,:,1),
-                    wtleng, g, w, errcof, numfun, funsub, scales, norms,
-                    x_work, null_work,
-                    view(values,:,1), view(errors,:,1), dref, gref, diff, order)
-        dir[1]    = dref[]
+        _eval_rule!(
+            ndim, view(centrs, :, 1), view(hwidts, :, 1),
+            wtleng, g, w, errcof, numfun, funsub, scales, norms,
+            x_work, null_work,
+            view(values, :, 1), view(errors, :, 1), dref, gref, diff, order
+        )
+        dir[1] = dref[]
         greate[1] = gref[]
     end
 
     for j in 1:numfun
         result[j] = values[j, 1]
         abserr[j] = errors[j, 1]
-        q[j, 1]   = values[j, 1]   # Q(J,0) = VALUES(J,0)
+        q[j, 1] = values[j, 1]   # Q(J,0) = VALUES(J,0)
     end
-    neval      = num
+    neval = num
     first_call = Ref(true)
-    numu       = 0
-    sbrgns     = 0
+    numu = 0
+    sbrgns = 0
 
     # LIST(1) = 0 in Fortran → list[1] = 1 (singular region) as initial sentinel
     list[1] = 1
@@ -252,7 +286,7 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         vacant = greate[top] < greate[1] ? 1 : top
 
         direct_i = round(Int, dir[vacant])     # integer direction value
-        ndiv     = max(2, -direct_i + 1)       # SINGUL+1 or 2
+        ndiv = max(2, -direct_i + 1)       # SINGUL+1 or 2
 
         # Budget check
         if neval + ndiv * num > maxpts
@@ -277,10 +311,10 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
                 hwidts[j, pointr] = hwidts[j, vacant]
                 centrs[j, pointr] = centrs[j, vacant]
             end
-            hwidts[direct_i, vacant]  /= 2.0
-            hwidts[direct_i, pointr]   = hwidts[direct_i, vacant]
-            centrs[direct_i, pointr]   = centrs[direct_i, vacant] + hwidts[direct_i, pointr]
-            centrs[direct_i, vacant]  -= hwidts[direct_i, vacant]
+            hwidts[direct_i, vacant] /= 2.0
+            hwidts[direct_i, pointr] = hwidts[direct_i, vacant]
+            centrs[direct_i, pointr] = centrs[direct_i, vacant] + hwidts[direct_i, pointr]
+            centrs[direct_i, vacant] -= hwidts[direct_i, vacant]
             dir[pointr] = dir[vacant]   # DIR(POINTR) = DIRECT
         else
             # Singular subdivision: cut first |direct_i| directions
@@ -289,12 +323,12 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
                 nxt = order[i]
                 hwidts[nxt, vacant] /= 2.0
                 for j in 1:ndim
-                    hwidts[j, pointr+i-1] = hwidts[j, vacant]
-                    centrs[j, pointr+i-1] = centrs[j, vacant]
+                    hwidts[j, pointr + i - 1] = hwidts[j, vacant]
+                    centrs[j, pointr + i - 1] = centrs[j, vacant]
                 end
-                dir[pointr+i-1]            = Float64(nxt)
-                centrs[nxt, pointr+i-1]    = centrs[nxt, vacant] + hwidts[nxt, vacant]
-                centrs[nxt, vacant]       -= hwidts[nxt, vacant]
+                dir[pointr + i - 1] = Float64(nxt)
+                centrs[nxt, pointr + i - 1] = centrs[nxt, vacant] + hwidts[nxt, vacant]
+                centrs[nxt, vacant] -= hwidts[nxt, vacant]
             end
         end
         dir[vacant] = Float64(direct_i)   # DIR(VACANT) = DIRECT (always)
@@ -303,7 +337,7 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         # Determine UPDATE index
         # ------------------------------------------------------------------
         if vacant == 1   # singular region → new U-term
-            numu  += 1
+            numu += 1
             update = numu
         else
             update = upoint[vacant]
@@ -314,34 +348,36 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         # ------------------------------------------------------------------
         if vacant == 1
             fill!(uerr_s, zero(TV))
-            fill!(unew,   zero(TV))
+            fill!(unew, zero(TV))
         else
             for j in 1:numfun
                 uerr_s[j] = -errors[j, vacant]
-                unew[j]   = -values[j, vacant]
+                unew[j] = -values[j, vacant]
             end
         end
 
         let dref = Ref(dir[vacant]), gref = Ref{TV}(zero(TV))
-            _eval_rule!(ndim, view(centrs,:,vacant), view(hwidts,:,vacant),
-                        wtleng, g, w, errcof, numfun, funsub, scales, norms,
-                        x_work, null_work,
-                        view(values,:,vacant), view(errors,:,vacant),
-                        dref, gref, diff, order)
-            dir[vacant]    = dref[]
+            _eval_rule!(
+                ndim, view(centrs, :, vacant), view(hwidts, :, vacant),
+                wtleng, g, w, errcof, numfun, funsub, scales, norms,
+                x_work, null_work,
+                view(values, :, vacant), view(errors, :, vacant),
+                dref, gref, diff, order
+            )
+            dir[vacant] = dref[]
             greate[vacant] = gref[]
         end
 
         if vacant == 1
             # Q(J, NUMU) = VALUES(J, 0)  →  q[j, numu+1] = values[j, 1]
             for j in 1:numfun
-                q[j, numu+1] = values[j, 1]
+                q[j, numu + 1] = values[j, 1]
             end
         else
             upoint[vacant] = update
             for j in 1:numfun
                 uerr_s[j] += errors[j, vacant]
-                unew[j]   += values[j, vacant]
+                unew[j] += values[j, vacant]
             end
         end
 
@@ -351,18 +387,20 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         for i in 2:ndiv
             idx2 = pointr + i - 2
             let dref = Ref(dir[idx2]), gref = Ref{TV}(zero(TV))
-                _eval_rule!(ndim, view(centrs,:,idx2), view(hwidts,:,idx2),
-                            wtleng, g, w, errcof, numfun, funsub, scales, norms,
-                            x_work, null_work,
-                            view(values,:,idx2), view(errors,:,idx2),
-                            dref, gref, diff, order)
-                dir[idx2]    = dref[]
+                _eval_rule!(
+                    ndim, view(centrs, :, idx2), view(hwidts, :, idx2),
+                    wtleng, g, w, errcof, numfun, funsub, scales, norms,
+                    x_work, null_work,
+                    view(values, :, idx2), view(errors, :, idx2),
+                    dref, gref, diff, order
+                )
+                dir[idx2] = dref[]
                 greate[idx2] = gref[]
             end
             upoint[idx2] = update
             for j in 1:numfun
                 uerr_s[j] += errors[j, idx2]
-                unew[j]   += values[j, idx2]
+                unew[j] += values[j, idx2]
             end
         end
 
@@ -370,10 +408,10 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         # Accumulate U and E series; set QNEW / QOLD for extrapolation
         # ------------------------------------------------------------------
         for j in 1:numfun
-            qnew[j]            = q[j, numu+1]     # Q(J, NUMU)
-            qold[j]            = q[j, numu]        # Q(J, NUMU-1)
-            u[j, update]      += unew[j]
-            e_mat[j, update]  += uerr_s[j]
+            qnew[j] = q[j, numu + 1]     # Q(J, NUMU)
+            qold[j] = q[j, numu]        # Q(J, NUMU-1)
+            u[j, update] += unew[j]
+            e_mat[j, update] += uerr_s[j]
         end
 
         # ------------------------------------------------------------------
@@ -381,9 +419,11 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         # UPDATE=0 signals a new step; else it's a correction of term `update`
         # ------------------------------------------------------------------
         ext_update = (vacant == 1) ? 0 : update
-        _extrapolate!(numfun, alpha, logf, singul, 1, numu, t_tab, ext_update,
-                      unew, qnew, qold, first_call, emax, e_mat,
-                      result, abserr, exterr, ne, beta)
+        _extrapolate!(
+            numfun, alpha, logf, singul, 1, numu, t_tab, ext_update,
+            unew, qnew, qold, first_call, emax, e_mat,
+            result, abserr, exterr, ne, beta
+        )
         first_call[] = false
 
         neval += ndiv * num
@@ -391,7 +431,7 @@ function _adaptive_integrate!(ndim::Int, numfun::Int,
         # Update singular region's error estimate to the extrapolation error
         greate[1] = zero(TV)
         for j in 1:numfun
-            greate[1]    = max(greate[1], exterr[j])
+            greate[1] = max(greate[1], exterr[j])
             errors[j, 1] = exterr[j]
         end
 

@@ -1,5 +1,6 @@
 name = "DECUHR"
 uuid = "d5c0ea0e-a2e6-4e56-a5f3-17f3ec7c9d22"
+authors = ["Jean-François Barthélémy <jean-francois.barthelemy@cerema.fr>"]
 version = "0.1.0"
 
 [deps]

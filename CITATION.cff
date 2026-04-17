@@ -1,0 +1,33 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: "Barthélémy"
+    given-names: "Jean-François"
+    orcid: "0000-0002-1968-8939"
+    affiliation: "Cerema, UMR MCD"
+title: "DECUHR.jl: Adaptive cubature for vertex singularities"
+abstract: "Pure-Julia port of the DECUHR algorithm (Espelid & Genz, 1994) for automatic adaptive integration of functions with vertex singularities over hyper-rectangular regions, exposed as a pluggable algorithm for the SciML Integrals.jl solver stack. Supports 2D and 3D integration, user-supplied or auto-estimated singular strength, logarithmic singularities, and vector-valued integrands."
+keywords:
+  - "Julia"
+  - "numerical integration"
+  - "adaptive cubature"
+  - "vertex singularities"
+  - "SciML"
+  - "Integrals.jl"
+version: "0.1.0"
+url: "https://github.com/MicMacTools/DECUHR.jl"
+repository-code: "https://github.com/MicMacTools/DECUHR.jl"
+license: "MIT"
+references:
+  - type: article
+    authors:
+      - family-names: "Espelid"
+        given-names: "Terje O."
+      - family-names: "Genz"
+        given-names: "Alan"
+    title: "DECUHR: An Algorithm for Automatic Integration of Singular Functions over a Hyperrectangular Region"
+    journal: "Numerical Algorithms"
+    volume: 8
+    year: 1994
+    start: 201
+    end: 220

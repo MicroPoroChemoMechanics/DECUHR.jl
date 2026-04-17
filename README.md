@@ -1,19 +1,28 @@
-# DECUHR.jl
+<p>
+  <img src="./docs/src/assets/logo.svg" width="100">
+</p>
 
-Pure-Julia port of the **DECUHR** algorithm (Espelid & Genz, 1994) for
-automatic adaptive integration of functions with **vertex singularities**
-over hyper-rectangular regions.
+# DECUHR
 
-Exposed as a pluggable algorithm for the
-[Integrals.jl](https://docs.sciml.ai/Integrals/stable/) solver stack via
-the `SciMLBase.AbstractIntegralAlgorithm` interface.
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicMacTools.github.io/DECUHR.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicMacTools.github.io/DECUHR.jl/dev/)
+[![Build Status](https://github.com/MicMacTools/DECUHR.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/MicMacTools/DECUHR.jl/actions/workflows/CI.yml?query=branch%3Amain)
+
+[![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-pink)](https://github.com/fredrikekre/Runic.jl)
+
+`DECUHR.jl` is a pure-Julia port of the DECUHR algorithm (Espelid &
+Genz, 1994) for automatic adaptive integration of functions with
+**vertex singularities** over hyper-rectangular regions. It is exposed
+as a pluggable algorithm for the
+[Integrals.jl](https://docs.sciml.ai/Integrals/stable/) solver stack
+via the `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 ## Features
 
 - 2-D and 3-D integration on hyper-rectangles.
 - Vertex singularity handling with user-supplied or auto-estimated
-  exponent `α` (the singular strength).
-- Logarithmic singularities (`logf = k` for `(log)^k` weights).
+  exponent ``\alpha`` (singular strength).
+- Logarithmic singularities (`logf = k` for ``(\log)^k`` weights).
 - Vector-valued integrands (any `NUMFUN`).
 - Richardson extrapolation on sub-region averages.
 - Reports a `retcode` compatible with Integrals.jl (`Success`,
@@ -21,14 +30,19 @@ the `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 ## Installation
 
-While the package is private in the MicMacTools organisation:
+While the package is private:
 
 ```julia
 julia> using Pkg
 julia> Pkg.add(url = "https://github.com/MicMacTools/DECUHR.jl.git")
 ```
 
-Once made public and registered, `Pkg.add("DECUHR")` will suffice.
+Once registered in the Julia general registry:
+
+```julia
+julia> using Pkg
+julia> Pkg.add("DECUHR")
+```
 
 ## Quick start
 
@@ -40,8 +54,8 @@ f = (u, _) -> (u[1] * u[2])^(-0.5)
 prob = IntegralProblem(f, zeros(2), ones(2))
 sol  = solve(prob, DecuhrAlgorithm(singul = 2, alpha = -0.5); abstol = 1e-8)
 
-@show sol.u              # ≈ 4.0
-@show sol.retcode        # Success
+@show sol.u           # ≈ 4.0
+@show sol.retcode     # Success
 ```
 
 A broader set of examples is in
@@ -70,14 +84,31 @@ HTML output is placed in `docs/build/`.
 
 - T.O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic
   Integration of Singular Functions over a Hyperrectangular Region*,
-  Numerical Algorithms **8** (1994), 201–220.
+  Numerical Algorithms **8** (1994) 201–220.
 - T.O. Espelid, *On integrating Vertex Singularities using
-  Extrapolation*, BIT **34** (1994), 62–79.
+  Extrapolation*, BIT **34** (1994) 62–79.
 
-## Licence
+## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT License — see [LICENSE](LICENSE) for details.
 
-## Author
+## Citation
 
-Jean-François Barthélémy — Cerema / UMR MCD.
+See [CITATION.cff](CITATION.cff) for citation details.
+
+**BibTeX entry:**
+
+```bibtex
+@software{decuhr_jl,
+  author = {Barthélémy, Jean-François},
+  title  = {DECUHR.jl: Adaptive cubature for vertex singularities},
+  url    = {https://github.com/MicMacTools/DECUHR.jl},
+  year   = {2026}
+}
+```
+
+## Credits and Acknowledgements
+
+Developed by [Jean-François Barthélémy](https://github.com/jfbarthelemy),
+researcher at [Cerema](https://www.cerema.fr/en) in the research team
+[UMR MCD](https://mcd.univ-gustave-eiffel.fr/).

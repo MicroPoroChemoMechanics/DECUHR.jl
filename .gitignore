@@ -1,20 +1,19 @@
-# Julia
-Manifest.toml
+*.jl.*.cov
+*.jl.cov
+*.jl.mem
+/Manifest.toml
+/docs/Manifest.toml
 /docs/build/
-/docs/site/
-*.cov
-*.mem
-deps/deps.jl
-deps/build.log
+/build/
 
-# Editor / OS
-.vscode/
-.idea/
-*.swp
-*.swo
+/local
+
+.vscode
+.idea
+.continue
+.claude
+CLAUDE.md
 .DS_Store
 Thumbs.db
-
-# Claude / AI configuration — local only
-.claude/
-CLAUDE.md
+*.swp
+*.swo

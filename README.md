@@ -90,7 +90,17 @@ HTML output is placed in `docs/build/`.
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+The Julia port (this package) is released under the MIT License — see
+[LICENSE](LICENSE) for details.
+
+### Upstream / third-party notice
+
+`DECUHR.jl` is a translation and modification of the Fortran 77 DECUHR
+routines of Espelid & Genz (Numerical Algorithms 8, 1994). The upstream
+distribution carries its own copyright notice, which **must be preserved in
+every copy and every derivative work** of this package. That notice is
+reproduced verbatim in [NOTICE](NOTICE); redistributors MUST ship both
+[LICENSE](LICENSE) and [NOTICE](NOTICE) unmodified.
 
 ## Citation
 
@@ -112,3 +122,7 @@ See [CITATION.cff](CITATION.cff) for citation details.
 Developed by [Jean-François Barthélémy](https://github.com/jfbarthelemy),
 researcher at [Cerema](https://www.cerema.fr/en) in the research team
 [UMR MCD](https://mcd.univ-gustave-eiffel.fr/).
+
+The Fortran 77 → Julia translation and parts of the subsequent codebase
+were developed with the assistance of Anthropic's *Claude Code*, under
+the author's review and numerical validation.

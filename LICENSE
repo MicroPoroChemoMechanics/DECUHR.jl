@@ -19,3 +19,23 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
+
+======================================================================
+                     Upstream / third-party notice
+======================================================================
+
+DECUHR.jl is a Julia port and modification of the Fortran 77 DECUHR
+routines published by T. O. Espelid and A. Genz, "DECUHR: An Algorithm
+for Automatic Integration of Singular Functions over a Hyperrectangular
+Region", Numerical Algorithms 8 (1994), 201–220.
+
+The upstream Fortran distribution carries its own copyright notice,
+reproduced verbatim in the file `NOTICE` at the root of this
+repository. That notice requires that it be included in all copies of
+any software which is or includes a copy or modification of the
+upstream software, and in all copies of the supporting documentation
+for such software.
+
+Accordingly, every copy and every derivative work of DECUHR.jl MUST
+retain both this `LICENSE` file and the accompanying `NOTICE` file
+unmodified.

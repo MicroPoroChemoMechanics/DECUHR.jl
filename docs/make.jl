@@ -35,6 +35,7 @@ makedocs(
         "Algorithm"     => "algorithm.md",
         "Examples"      => "examples.md",
         "API Reference" => "api.md",
+        "License"       => "license.md",
     ],
     checkdocs = :exports,
     warnonly  = true,

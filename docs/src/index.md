@@ -51,3 +51,11 @@ println(sol.retcode) # Success
   Numerical Algorithms **8** (1994), pp. 201–220.
 - T. O. Espelid, *On Integrating Vertex Singularities using Extrapolation*,
   BIT **34** (1994), pp. 62–79.
+
+## License and upstream notice
+
+The Julia port is MIT-licensed. Because it is a translation and modification
+of the original Fortran 77 DECUHR routines, the upstream copyright notice of
+Espelid & Genz **must be preserved in every copy and every derivative work**.
+See the [License](license.md) page for the full text of both the MIT License
+and the upstream notice.

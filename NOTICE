@@ -1,0 +1,54 @@
+DECUHR.jl — Third-party / upstream notice
+==========================================
+
+This package is a Julia port of the DECUHR Fortran 77 algorithm published by
+
+    T. O. Espelid and A. Genz,
+    "DECUHR: An Algorithm for Automatic Integration of Singular Functions
+    over a Hyperrectangular Region",
+    Numerical Algorithms 8 (1994), 201–220.
+
+The original Fortran source, as distributed with the journal "Numerical
+Algorithms", carries the following notice. It is reproduced here verbatim
+and must be preserved in every copy and every derivative work of DECUHR.jl,
+in accordance with the terms it states:
+
+    ***************************************************************************
+    * All the software  contained in this library  is protected by copyright. *
+    * Permission  to use, copy, modify, and  distribute this software for any *
+    * purpose without fee is hereby granted, provided that this entire notice *
+    * is included  in all copies  of any software which is or includes a copy *
+    * or modification  of this software  and in all copies  of the supporting *
+    * documentation for such software.                                        *
+    ***************************************************************************
+    * THIS SOFTWARE IS BEING PROVIDED "AS IS", WITHOUT ANY EXPRESS OR IMPLIED *
+    * WARRANTY. IN NO EVENT, NEITHER  THE AUTHORS, NOR THE PUBLISHER, NOR ANY *
+    * MEMBER  OF THE EDITORIAL BOARD OF  THE JOURNAL  "NUMERICAL ALGORITHMS", *
+    * NOR ITS EDITOR-IN-CHIEF, BE  LIABLE FOR ANY ERROR  IN THE SOFTWARE, ANY *
+    * MISUSE  OF IT  OR ANY DAMAGE ARISING OUT OF ITS USE. THE ENTIRE RISK OF *
+    * USING THE SOFTWARE LIES WITH THE PARTY DOING SO.                        *
+    ***************************************************************************
+    * ANY USE  OF THE SOFTWARE  CONSTITUTES  ACCEPTANCE  OF THE TERMS  OF THE *
+    * ABOVE STATEMENT.                                                        *
+    ***************************************************************************
+
+Scope
+-----
+
+DECUHR.jl is a translation of, and a modification of, the Fortran routines
+DECHHR, DETRHR, DESBHR, DEADHR, DECALP, D132RE, D113RE, D09HRE, D07HRE,
+DEINHR, DEFSHR and DERLHR described in the 1994 paper. The present Julia
+implementation, together with its Integrals.jl integration layer, test suite
+and documentation, is additionally covered by the MIT License recorded in
+`LICENSE` (Copyright © 2026 Jean-François Barthélémy).
+
+The MIT grant on the Julia port does not supersede the upstream notice above:
+downstream users must preserve both this NOTICE file and the `LICENSE` file
+in all copies and derivative works.
+
+Companion reference
+-------------------
+
+    T. O. Espelid,
+    "On Integrating Vertex Singularities using Extrapolation",
+    BIT 34 (1994), 62–79.

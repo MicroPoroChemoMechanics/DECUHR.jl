@@ -9,7 +9,7 @@ SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 
 [compat]
 Integrals = "5.1.0"
-SciMLBase = "2"
+SciMLBase = "2, 3"
 julia = "1.9"
 
 [extras]

@@ -15,8 +15,8 @@ keywords:
   - "SciML"
   - "Integrals.jl"
 version: "0.1.0"
-url: "https://github.com/MicMacTools/DECUHR.jl"
-repository-code: "https://github.com/MicMacTools/DECUHR.jl"
+url: "https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl"
+repository-code: "https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl"
 license: "MIT"
 references:
   - type: article

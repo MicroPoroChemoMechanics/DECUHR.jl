@@ -4,10 +4,11 @@
 
 # DECUHR
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicMacTools.github.io/DECUHR.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicMacTools.github.io/DECUHR.jl/dev/)
-[![Build Status](https://github.com/MicMacTools/DECUHR.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://github.com/MicMacTools/DECUHR.jl/actions/workflows/CI.yml?query=branch%3Amain)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicroPoroChemoMechanics.codeberg.page/DECUHR.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicroPoroChemoMechanics.codeberg.page/DECUHR.jl/dev/)
+[![Build Status](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/actions/workflows/CI.yml/badge.svg?branch=main)](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/actions?workflow=CI.yml)
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/src/branch/main/LICENSE)
 [![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-pink)](https://github.com/fredrikekre/Runic.jl)
 
 `DECUHR.jl` is a pure-Julia port of the DECUHR algorithm (Espelid &
@@ -30,18 +31,14 @@ via the `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 ## Installation
 
-While the package is private:
+`DECUHR.jl` is released through the dedicated
+[MPCM-Registry](https://codeberg.org/MicroPoroChemoMechanics/MPCM-Registry).
+Add the registry once, then install the package:
 
 ```julia
 julia> using Pkg
-julia> Pkg.add(url = "https://github.com/MicMacTools/DECUHR.jl.git")
-```
-
-Once registered in the Julia general registry:
-
-```julia
-julia> using Pkg
-julia> Pkg.add("DECUHR")
+pkg> registry add https://codeberg.org/MicroPoroChemoMechanics/MPCM-Registry
+pkg> add DECUHR
 ```
 
 ## Quick start
@@ -112,14 +109,14 @@ See [CITATION.cff](CITATION.cff) for citation details.
 @software{decuhr_jl,
   author = {Barthélémy, Jean-François},
   title  = {DECUHR.jl: Adaptive cubature for vertex singularities},
-  url    = {https://github.com/MicMacTools/DECUHR.jl},
+  url    = {https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl},
   year   = {2026}
 }
 ```
 
 ## Credits and Acknowledgements
 
-Developed by [Jean-François Barthélémy](https://github.com/jfbarthelemy),
+Developed by [Jean-François Barthélémy](https://codeberg.org/jfbarthelemy),
 researcher at [Cerema](https://www.cerema.fr/en) in the research team
 [UMR MCD](https://mcd.univ-gustave-eiffel.fr/).
 

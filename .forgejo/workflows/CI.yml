@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  test:
+    name: Julia ${{ matrix.version }}
+    runs-on: codeberg-medium-lazy
+    timeout-minutes: 120
+    env:
+      JULIA_PKG_PRECOMPILE_AUTO: 0
+    strategy:
+      fail-fast: false
+      matrix:
+        version:
+          - '1'
+          - 'nightly'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Julia
+        run: |
+          curl -fsSL https://install.julialang.org | sh -s -- --yes --default-channel ${{ matrix.version }}
+          echo "$HOME/.juliaup/bin" >> $GITHUB_PATH
+
+      - name: Cache Julia packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.julia/packages
+            ~/.julia/compiled
+          key: ${{ runner.os }}-julia-${{ matrix.version }}-${{ hashFiles('Project.toml', 'Manifest.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-julia-${{ matrix.version }}-
+
+      - name: Build package
+        run: julia --project -e 'using Pkg; Pkg.instantiate()'
+
+      - name: Run tests
+        run: julia --project -e 'using Pkg; Pkg.test()'

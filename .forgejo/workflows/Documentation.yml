@@ -1,0 +1,63 @@
+name: Documentation
+
+on:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ startsWith(github.ref, 'refs/pull/') }}
+
+jobs:
+  build:
+    runs-on: codeberg-medium-lazy
+    timeout-minutes: 120
+    env:
+      JULIA_PKG_PRECOMPILE_AUTO: 0
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Julia
+        run: |
+          curl -fsSL https://install.julialang.org | sh -s -- --yes
+          echo "$HOME/.juliaup/bin" >> $GITHUB_PATH
+
+      - name: Cache Julia packages
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.julia/packages
+            ~/.julia/compiled
+          key: ${{ runner.os }}-julia-docs-${{ hashFiles('docs/Project.toml', 'docs/Manifest.toml', 'Project.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-julia-docs-
+
+      - name: Install git and ssh
+        run: |
+          sudo apt-get update -q
+          sudo apt-get install -y -q git ssh
+
+      - name: Install doc dependencies
+        run: |
+          julia -e '
+            using Pkg
+            Pkg.develop(PackageSpec(path=pwd()))
+            Pkg.activate("docs/")
+            Pkg.instantiate()
+          '
+
+      - name: Run doctests
+        run: |
+          julia --project=docs/ -e '
+            using Documenter: DocMeta, doctest
+            using DECUHR
+            DocMeta.setdocmeta!(DECUHR, :DocTestSetup,
+                :(using DECUHR);
+                recursive=true)
+            doctest(DECUHR)
+          '
+
+      - name: Build and deploy
+        env:
+          DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
+        run: julia --project=docs/ docs/make.jl

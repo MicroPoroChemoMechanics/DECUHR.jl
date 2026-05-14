@@ -2,7 +2,7 @@
 
 The Julia port — `DECUHR.jl`, i.e. this package, its test suite and its
 documentation — is released under the **MIT License**, reproduced in the
-repository file [`LICENSE`](https://github.com/MicMacTools/DECUHR.jl/blob/main/LICENSE).
+repository file [`LICENSE`](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/src/branch/main/LICENSE).
 
     MIT License
 
@@ -38,7 +38,7 @@ routines published by
 
 The upstream Fortran distribution carries its own copyright notice,
 reproduced below verbatim and also stored in the repository file
-[`NOTICE`](https://github.com/MicMacTools/DECUHR.jl/blob/main/NOTICE). That
+[`NOTICE`](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/src/branch/main/NOTICE). That
 notice requires that it be included in all copies of any software which is
 or includes a copy or modification of the upstream software, and in all
 copies of the supporting documentation.

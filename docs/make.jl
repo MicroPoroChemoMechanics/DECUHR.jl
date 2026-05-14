@@ -11,6 +11,7 @@ DocMeta.setdocmeta!(
 makedocs(
     clean    = false,
     modules  = [DECUHR],
+    remotes  = nothing,
     authors  = "Jean-François Barthélémy",
     sitename = "DECUHR.jl",
     format   = Documenter.HTML(;

@@ -20,7 +20,7 @@ workflow.  No additional API is needed beyond what Integrals.jl provides.
 ```julia
 using Integrals, DECUHR
 
-prob = IntegralProblem(f, lb, ub)
+prob = IntegralProblem(f, (lb, ub))
 sol  = solve(prob, DecuhrAlgorithm(; kwargs...);
              abstol=1e-8, reltol=1e-6, maxiters=100_000)
 ```

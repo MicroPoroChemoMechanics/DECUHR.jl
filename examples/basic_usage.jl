@@ -28,7 +28,7 @@ println("\n--- Example 1: 2-D vertex singularity, alpha = -0.5 ---")
 
 f1(u, _) = (u[1] * u[2])^(-0.5)
 
-prob1 = IntegralProblem(f1, zeros(2), ones(2))
+prob1 = IntegralProblem(f1, (zeros(2), ones(2)))
 sol1  = solve(prob1,
               DecuhrAlgorithm(singul=2, alpha=-0.5);
               abstol=1e-8, reltol=1e-6)
@@ -40,7 +40,7 @@ exact1 = 4.0
 @show sol1.retcode
 println("Error vs exact (4.0): ", abs(sol1.u - exact1))
 
-solve(IntegralProblem((x, _) -> log(x[1])*log(x[2]), zeros(2), ones(2)), DecuhrAlgorithm())
+solve(IntegralProblem((x, _) -> log(x[1])*log(x[2]), (zeros(2), ones(2))), DecuhrAlgorithm())
 
 # ──────────────────────────────────────────────────────────────
 # Example 2 : 2-D vertex singularity  (alpha auto-estimated)
@@ -66,7 +66,7 @@ println("\n--- Example 3: smooth 2-D integrand ---")
 
 f3(u, _) = sin(u[1]) * cos(u[2])
 
-prob3 = IntegralProblem(f3, zeros(2), fill(π/2, 2))
+prob3 = IntegralProblem(f3, (zeros(2), fill(π/2, 2)))
 sol3  = solve(prob3, DecuhrAlgorithm(); abstol=1e-10, reltol=1e-10)
 
 exact3 = 1.0
@@ -84,7 +84,7 @@ println("\n--- Example 4: vector integrand (NUMFUN=2) ---")
 
 f4(u, _) = [u[1]^2 + u[2]^2,  u[1]*u[2]]
 
-prob4 = IntegralProblem(f4, zeros(2), ones(2))
+prob4 = IntegralProblem(f4, (zeros(2), ones(2)))
 sol4  = solve(prob4, DecuhrAlgorithm(); abstol=1e-9)
 
 exact4 = [2/3, 1/4]
@@ -101,7 +101,7 @@ println("\n--- Example 5: 3-D vertex singularity, alpha = -1/3 ---")
 
 f5(u, _) = (u[1] * u[2] * u[3])^(-1/3)
 
-prob5 = IntegralProblem(f5, zeros(3), ones(3))
+prob5 = IntegralProblem(f5, (zeros(3), ones(3)))
 sol5  = solve(prob5,
               DecuhrAlgorithm(singul=3, alpha=-1/3);
               abstol=1e-7, reltol=1e-7)
@@ -121,7 +121,7 @@ println("\n--- Example 6: logarithmic singularity ---")
 
 f6(u, _) = -log(u[1] * u[2])   # = -log(x) - log(y)
 
-prob6 = IntegralProblem(f6, zeros(2), ones(2))
+prob6 = IntegralProblem(f6, (zeros(2), ones(2)))
 sol6  = solve(prob6,
               DecuhrAlgorithm(singul=2, alpha=0.0, logf=1);
               abstol=1e-8)

@@ -47,7 +47,7 @@ using Integrals, DECUHR
 
 # ∫₀¹∫₀¹ (x·y)^(-0.5) dx dy = 4
 f = (u, _) -> (u[1] * u[2])^(-0.5)
-prob = IntegralProblem(f, zeros(2), ones(2))
+prob = IntegralProblem(f, (zeros(2), ones(2)))
 sol  = solve(prob, DecuhrAlgorithm(singul = 2, alpha = -0.5); abstol = 1e-8)
 
 @show sol.u           # ≈ 4.0

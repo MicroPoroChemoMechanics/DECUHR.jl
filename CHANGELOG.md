@@ -1,5 +1,27 @@
 # Changelog
 
+## v0.1.1 — Integrals.jl tuple-domain API
+
+### Changed
+
+- Documentation, examples and tests now construct `IntegralProblem`
+  with the **tuple-domain** form `IntegralProblem(f, (lb, ub))`
+  (and `IntegralProblem(f, (lb, ub), p)` for parameterised integrands).
+  The legacy three-positional-argument form `IntegralProblem(f, lb, ub)`
+  is no longer supported by Integrals.jl / SciMLBase (≥ 5.4): the upper
+  bound `ub` was silently swallowed as the parameter `p` and `lb` alone
+  became the domain, so `DecuhrAlgorithm` received scalar bounds and
+  raised a `BoundsError`. No change to `DecuhrAlgorithm` or the solver
+  itself — only the documented call syntax.
+
+### Compat
+
+- `[compat]` lower bound for `Integrals` raised to `"5.4"` (was `"5"`),
+  the line that ships the modern tuple-domain / `ChangeOfVariables`
+  domain handling this release targets. `SciMLBase` stays `"2, 3"`:
+  DECUHR is exercised on both SciMLBase 2.155 (via MeanFieldHom.jl, whose
+  `OrdinaryDiffEq 6` pins SciMLBase 2) and SciMLBase 3.16 (standalone).
+
 ## v0.1.0 — Initial release
 
 First public release of DECUHR.jl, hosted on Codeberg

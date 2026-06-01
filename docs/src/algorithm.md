@@ -77,7 +77,7 @@ differentiating through the integral with respect to parameters `p`:
 using ForwardDiff, Integrals, DECUHR
 
 f = (u, p) -> exp(-p[1] * (u[1]^2 + u[2]^2))
-prob = IntegralProblem(f, zeros(2), ones(2))
+prob = IntegralProblem(f, (zeros(2), ones(2)))
 
 # Derivative of the integral w.r.t. p[1] at p₀ = [1.0]
 dI_dp = ForwardDiff.gradient(p -> solve(prob, DecuhrAlgorithm(alpha=0.0);

@@ -73,7 +73,7 @@ export DecuhrAlgorithm
 # ============================================================
 """
     DecuhrAlgorithm(; key=0, singul=1, alpha=-2.0, logf=0,
-                      wrksub=5000, emax=20, minpts=0)
+                      wrksub=50000, emax=20, minpts=0)
 
 DECUHR adaptive integration algorithm for functions with vertex singularities.
 
@@ -85,7 +85,7 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 | `singul` | `1`     | Dimension of the singularity: the vertex `(a[1],…,a[singul])` is singular |
 | `alpha`  | `-2.0`  | Exponent of the homogeneous singularity. Auto-estimated when `alpha ≤ -singul` |
 | `logf`   | `0`     | `1` if a logarithmic factor is present; `0` otherwise (auto-detected when `alpha ≤ -singul`) |
-| `wrksub` | `5000`  | Maximum number of stored subregions |
+| `wrksub` | `50000` | Maximum number of stored subregions |
 | `emax`   | `20`    | Maximum number of Richardson extrapolation steps |
 | `minpts` | `0`     | Minimum number of integrand evaluations |
 
@@ -146,7 +146,7 @@ function DecuhrAlgorithm(;
         singul = 1,
         alpha = -2.0,   # ≤ -singul triggers auto-estimation
         logf = 0,
-        wrksub = 5000,
+        wrksub = 50000,
         emax = 20,
         minpts = 0
     )

@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.1.3 — 2026-06-01
+
+### Changed
+
+- **Default parameter alignment with Fortran reference:** the default value of
+  `wrksub` (maximum number of stored subregions) is increased from 5000 to
+  50000 to match the original DECUHR Fortran implementation. This provides
+  sufficient refinement budget by default for challenging 3-D singularities and
+  other difficult cases. Users requiring smaller memory footprints may still
+  pass `wrksub` explicitly.
+
+### Documentation
+
+- Updated examples and API documentation to reflect `wrksub=50000` as the new
+  default.
+
 ## v0.1.2 — 2026-06-01
 
 ### Added

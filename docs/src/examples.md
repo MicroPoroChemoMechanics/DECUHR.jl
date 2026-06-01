@@ -84,10 +84,13 @@ I = \int_0^1\!\int_0^1\!\int_0^1 (x_1 x_2 x_3)^{-1/3}\, dx
   = \left(\frac{3}{2}\right)^3 = \frac{27}{8}
 ```
 
+The 3-D vertex singularity is challenging and requires adequate budget:
+
 ```@example shared
 f5   = (u, p) -> (u[1] * u[2] * u[3])^(-1/3)
 prob5 = IntegralProblem(f5, (zeros(3), ones(3)))
-sol5  = solve(prob5, DecuhrAlgorithm(singul=3, alpha=-1/3); abstol=1e-7)
+sol5  = solve(prob5, DecuhrAlgorithm(singul=3, alpha=-1/3, wrksub=60_000);
+              abstol=1e-7, reltol=1e-7, maxiters=1_500_000)
 
 println("I  ≈ ", sol5.u)
 println("|err| = ", abs(sol5.u - (3/2)^3))

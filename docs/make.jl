@@ -15,8 +15,8 @@ makedocs(
     authors  = "Jean-François Barthélémy",
     sitename = "DECUHR.jl",
     format   = Documenter.HTML(;
-        canonical     = "https://MicroPoroChemoMechanics.codeberg.page/DECUHR.jl",
-        repolink      = "https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl",
+        canonical     = "https://MicroPoroChemoMechanics.github.io/DECUHR.jl",
+        repolink      = "https://github.com/MicroPoroChemoMechanics/DECUHR.jl",
         edit_link     = "main",
         assets        = ["assets/favicon.ico", "assets/custom.css"],
         prettyurls    = (get(ENV, "CI", nothing) == "true"),
@@ -35,7 +35,7 @@ makedocs(
 )
 
 deploydocs(;
-    repo         = "git@codeberg-docs:MicroPoroChemoMechanics/DECUHR.jl.git",
+    repo         = "github.com/MicroPoroChemoMechanics/DECUHR.jl.git",
     devbranch    = "main",
     push_preview = false,
 )

@@ -16,8 +16,8 @@ keywords:
   - "Integrals.jl"
 version: "0.1.3"
 date-released: "2026-06-01"
-url: "https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl"
-repository-code: "https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl"
+url: "https://github.com/MicroPoroChemoMechanics/DECUHR.jl"
+repository-code: "https://github.com/MicroPoroChemoMechanics/DECUHR.jl"
 license: "MIT"
 references:
   - type: article

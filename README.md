@@ -4,10 +4,10 @@
 
 # DECUHR
 
-[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicroPoroChemoMechanics.codeberg.page/DECUHR.jl/stable/)
-[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicroPoroChemoMechanics.codeberg.page/DECUHR.jl/dev/)
+[![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicroPoroChemoMechanics.github.io/DECUHR.jl/stable/)
+[![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicroPoroChemoMechanics.github.io/DECUHR.jl/dev/)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl/src/branch/main/LICENSE)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/LICENSE)
 [![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-pink)](https://github.com/fredrikekre/Runic.jl)
 
 `DECUHR.jl` is a pure-Julia port of the DECUHR algorithm (Espelid &
@@ -31,12 +31,12 @@ via the `SciMLBase.AbstractIntegralAlgorithm` interface.
 ## Installation
 
 `DECUHR.jl` is released through the dedicated
-[MPCM-Registry](https://codeberg.org/MicroPoroChemoMechanics/MPCM-Registry).
+[MPCM-Registry](https://github.com/MicroPoroChemoMechanics/MPCM-Registry).
 Add the registry once, then install the package:
 
 ```julia
 julia> using Pkg
-pkg> registry add https://codeberg.org/MicroPoroChemoMechanics/MPCM-Registry
+pkg> registry add https://github.com/MicroPoroChemoMechanics/MPCM-Registry
 pkg> add DECUHR
 ```
 
@@ -108,14 +108,14 @@ See [CITATION.cff](CITATION.cff) for citation details.
 @software{decuhr_jl,
   author = {Barthélémy, Jean-François},
   title  = {DECUHR.jl: Adaptive cubature for vertex singularities},
-  url    = {https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl},
+  url    = {https://github.com/MicroPoroChemoMechanics/DECUHR.jl},
   year   = {2026}
 }
 ```
 
 ## Credits and Acknowledgements
 
-Developed by [Jean-François Barthélémy](https://codeberg.org/jfbarthelemy),
+Developed by [Jean-François Barthélémy](https://github.com/jfbarthelemy),
 researcher at [Cerema](https://www.cerema.fr/en) in the research team
 [UMR MCD](https://mcd.univ-gustave-eiffel.fr/).
 

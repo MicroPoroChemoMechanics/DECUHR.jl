@@ -262,6 +262,41 @@ function _decuhr_driver(
 end
 
 # ============================================================
+# Integrals.__solve — skip the ChangeOfVariables remap on finite domains
+# ============================================================
+
+# DECUHR integrates a finite hyperrectangle natively, with the singularity
+# pinned at the lower vertex a[1:singul].  `Integrals.init` wraps every
+# tuple-domain problem in `ChangeOfVariables(transformation_if_inf, alg)`,
+# which remaps [lb, ub] → [-1, 1] and multiplies by the Jacobian at every
+# evaluation.  Near the singular vertex the remapped coordinate 1 + t is
+# quantised at the machine spacing around -1 (≈ 1e-16 in absolute distance to
+# the corner, versus subnormal resolution at a native 0.0 corner), which
+# distorts the singular subdivision geometry and can stall the U-series
+# extrapolation: ∫(x·y)^(-1/2) needs 110_045 evaluations natively but
+# exhausts a 10^6 budget through the remap.  Integrating in native
+# coordinates also makes `solve` agree bit-for-bit with the Fortran-validated
+# driver.  Infinite domains keep the standard transformation (and DECUHR's
+# vertex-singularity semantics do not apply to them anyway).
+function Integrals.__solve(
+        cache::Integrals.IntegralCache,
+        alg::Integrals.ChangeOfVariables{T, DecuhrAlgorithm},
+        sensealg, udomain, p;
+        kwargs...
+    ) where {T}
+    lb, ub = udomain
+    if all(isfinite, lb) && all(isfinite, ub)
+        # __solvebp (not __solvebp_call) keeps the ForwardDiff intercept active.
+        return Integrals.__solvebp(cache, alg.alg, sensealg, udomain, p; kwargs...)
+    end
+    return invoke(
+        Integrals.__solve,
+        Tuple{Integrals.IntegralCache, Integrals.ChangeOfVariables, Any, Any, Any},
+        cache, alg, sensealg, udomain, p; kwargs...
+    )
+end
+
+# ============================================================
 # Integrals.__solvebp_call — Integrals.jl integration hook
 # ============================================================
 

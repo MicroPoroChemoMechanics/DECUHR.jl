@@ -13,7 +13,9 @@
 #
 # Two levels are locked:
 #   * driver — DECUHR._decuhr_driver, the pure algorithm (the Fortran contract);
-#   * solve  — the user-facing Integrals.jl path.
+#   * solve  — the user-facing Integrals.jl path.  Since DECUHR skips the
+#     Integrals ChangeOfVariables remap on finite domains, solve agrees with
+#     the driver bit-for-bit (same result, abserr, neval, ifail).
 
 @testset "Canonical C1-C6 (bit-exact golden)" begin
     maxpts = 1_000_000
@@ -32,7 +34,7 @@
                 abserr = 0x3ed0835aa7c6d0a9,   # 3.9370303252414573e-6
                 neval = 110045, ifail = 0,
             ),
-            solve = (result = 0x4010000fef628c74, neval = 999895, ifail = 1),
+            solve = (result = 0x4010000feece1bc9, neval = 110045, ifail = 0),
         ),
         (
             name = "C2 1/√(x²+y²)",
@@ -54,7 +56,7 @@
                 abserr = 0x3d4fb9d6ec58682c,   # 2.2542633159715836e-13
                 neval = 195, ifail = 0,
             ),
-            solve = (result = 0x3ff0000000000032, neval = 195, ifail = 0),
+            solve = (result = 0x3ff0000000000034, neval = 195, ifail = 0),
         ),
         (
             name = "C4 (x·y·z)^(-1/3)",
@@ -65,7 +67,7 @@
                 abserr = 0x3f3a31ce04184351,   # 3.9969711005576498e-4
                 neval = 999871, ifail = 1,
             ),
-            solve = (result = 0x400b00104210694f, neval = 999871, ifail = 1),
+            solve = (result = 0x400b00103fef890b, neval = 999871, ifail = 1),
         ),
         (
             name = "C5 x²+y²",
@@ -87,7 +89,7 @@
                 abserr = 0x3ebfde3c44736c2e,   # 1.899487203796715e-6
                 neval = 9035, ifail = 0,
             ),
-            solve = (result = 0x4000000003dd3e51, neval = 9035, ifail = 0),
+            solve = (result = 0x4000000003dd3e52, neval = 9035, ifail = 0),
         ),
     ]
 

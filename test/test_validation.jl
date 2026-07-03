@@ -63,6 +63,17 @@ end
     @test startswith(DECUHR.ifail_message(99), "unknown")
 end
 
+@testset "Infinite domains keep the standard transformation path" begin
+    # The finite-domain ChangeOfVariables bypass must not intercept infinite
+    # bounds; those keep Integrals' remap and fail exactly as they always did
+    # (DECUHR's vertex-singularity model does not apply to infinite domains).
+    f(u, _) = exp(-u[1]^2 - u[2]^2)
+    prob = IntegralProblem(f, ([-Inf, -Inf], [Inf, Inf]))
+    sol = solve(prob, DecuhrAlgorithm(); abstol = 1.0e-8, reltol = 1.0e-6)
+    @test sol.retcode == RC.Failure
+    @test sol.stats.ifail == 14
+end
+
 @testset "ifail = 14 — alpha estimation failure" begin
     # An identically zero integrand defeats DECALP (no usable ratio table).
     sol = solve(IntegralProblem((u, _) -> 0.0, (zeros(2), ones(2))), DecuhrAlgorithm(singul = 2))

@@ -463,7 +463,7 @@ function _fully_symmetric_sum!(
         fulsms, center, hwidth, g_col, ndim, numfun, funsub, funvls,
         g_scratch, x_scratch
     )
-    fill!(fulsms, 0.0)
+    fill!(fulsms, zero(eltype(fulsms)))
     g = g_scratch
     copyto!(g, g_col)   # mutable copy into preallocated buffer
     x = x_scratch
@@ -565,8 +565,10 @@ function _eval_rule!(
     end
 
     # Fourth differences along each axis (generators at positions 2 and 3)
+    # Accumulators are typed on the value type (duals when differentiating);
+    # for Float64 zero(eltype(diff)) === 0.0, so nothing changes numerically.
     ratio = (g[1, 3] / g[1, 2])^2
-    difmax = 0.0
+    difmax = zero(eltype(diff))
     for i in 1:ndim
         x[i] = center[i] - hwidth[i] * g[1, 2]
         funsub(x, view(null_work, :, 5))
@@ -578,7 +580,7 @@ function _eval_rule!(
         funsub(x, view(null_work, :, 8))
         x[i] = center[i]
 
-        difsum = 0.0
+        difsum = zero(eltype(diff))
         for j in 1:numfun
             frthdf = abs(
                 2.0 * (1.0 - ratio) * rgnerr[j]
@@ -623,10 +625,10 @@ function _eval_rule!(
     end
 
     # Error via null-rule linear combination (Genz-Malik)
-    greate = 0.0
+    greate = zero(eltype(rgnerr))
     for j in 1:numfun
         for i in 1:3
-            search = 0.0
+            search = zero(eltype(null_work))
             for k in 1:wtleng
                 search = max(
                     search,

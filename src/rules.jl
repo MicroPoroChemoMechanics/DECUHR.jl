@@ -463,12 +463,15 @@ function _fully_symmetric_sum!(
         fulsms, center, hwidth, g_col, ndim, numfun, funsub, funvls,
         g_scratch, x_scratch
     )
-    fill!(fulsms, 0.0)
+    fill!(fulsms, zero(eltype(fulsms)))
     g = g_scratch
     copyto!(g, g_col)   # mutable copy into preallocated buffer
     x = x_scratch
 
-    while true
+    # All loops below index with 1:ndim / 1:numfun into caller-preallocated
+    # buffers of exactly those lengths; @inbounds does not reach into funsub
+    # (bounds-check elision is not propagated through the call).
+    @inbounds while true
         # Set evaluation point from current permutation of g  (label 20)
         for i in 1:ndim
             x[i] = center[i] + g[i] * hwidth[i]
@@ -544,10 +547,14 @@ function _eval_rule!(
 
     direct = direct_ref[]
 
+    # All loops below index with 1:ndim / 1:numfun / 1:wtleng into buffers the
+    # caller allocated at exactly those sizes; @inbounds does not reach into
+    # the funsub calls.
+
     # Volume
     rgnvol = 1.0
     divaxn = 1
-    for i in 1:ndim
+    @inbounds for i in 1:ndim
         rgnvol *= hwidth[i]
         x[i] = center[i]
         if hwidth[i] > hwidth[divaxn]
@@ -557,7 +564,7 @@ function _eval_rule!(
 
     # f at center
     funsub(x, rgnerr)   # rgnerr used as temp here
-    for j in 1:numfun
+    @inbounds for j in 1:numfun
         basval[j] = w[1, 1] * rgnerr[j]
         for k in 1:4
             null_work[j, k] = w[k + 1, 1] * rgnerr[j]
@@ -565,9 +572,11 @@ function _eval_rule!(
     end
 
     # Fourth differences along each axis (generators at positions 2 and 3)
+    # Accumulators are typed on the value type (duals when differentiating);
+    # for Float64 zero(eltype(diff)) === 0.0, so nothing changes numerically.
     ratio = (g[1, 3] / g[1, 2])^2
-    difmax = 0.0
-    for i in 1:ndim
+    difmax = zero(eltype(diff))
+    @inbounds for i in 1:ndim
         x[i] = center[i] - hwidth[i] * g[1, 2]
         funsub(x, view(null_work, :, 5))
         x[i] = center[i] + hwidth[i] * g[1, 2]
@@ -578,7 +587,7 @@ function _eval_rule!(
         funsub(x, view(null_work, :, 8))
         x[i] = center[i]
 
-        difsum = 0.0
+        difsum = zero(eltype(diff))
         for j in 1:numfun
             frthdf = abs(
                 2.0 * (1.0 - ratio) * rgnerr[j]
@@ -614,7 +623,7 @@ function _eval_rule!(
             view(g, :, col), ndim, numfun, funsub, funvls,
             fs_g, fs_x
         )
-        for j in 1:numfun
+        @inbounds for j in 1:numfun
             basval[j] += w[1, col] * fulsms[j]
             for k in 1:4
                 null_work[j, k] += w[k + 1, col] * fulsms[j]
@@ -623,10 +632,10 @@ function _eval_rule!(
     end
 
     # Error via null-rule linear combination (Genz-Malik)
-    greate = 0.0
-    for j in 1:numfun
+    greate = zero(eltype(rgnerr))
+    @inbounds for j in 1:numfun
         for i in 1:3
-            search = 0.0
+            search = zero(eltype(null_work))
             for k in 1:wtleng
                 search = max(
                     search,
@@ -650,7 +659,7 @@ function _eval_rule!(
     # Sort ORDER[1..|direct|] by DIFF in descending order (for singular-region planning)
     if direct < 0
         neg_direct = -round(Int, direct)
-        for i in 2:neg_direct
+        @inbounds for i in 2:neg_direct
             cur = order[i]
             new_val = diff[cur]
             j = i - 1

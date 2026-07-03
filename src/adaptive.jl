@@ -34,6 +34,32 @@
 # References:
 #   Espelid & Genz, Numerical Algorithms 8 (1994) 201-220
 
+"""
+    ifail_message(ifail::Integer) -> String
+
+Human-readable description of a raw DECUHR `IFAIL` code (as exposed in
+`sol.stats.ifail`).  Not exported; call as `DECUHR.ifail_message(code)`.
+"""
+function ifail_message(ifail::Integer)
+    ifail == 0 && return "normal exit: requested accuracy reached"
+    ifail == 1 && return "maxiters (MAXPTS) exhausted before the requested accuracy was reached"
+    ifail == 2 && return "KEY < 0 or KEY > 4"
+    ifail == 3 && return "NDIM < 2 or NDIM > $_MAXDIM"
+    ifail == 4 && return "KEY == 1 requires NDIM == 2"
+    ifail == 5 && return "KEY == 2 requires NDIM == 3"
+    ifail == 6 && return "NUMFUN < 1"
+    ifail == 7 && return "A[j] >= B[j] for some j"
+    ifail == 8 && return "maxiters (MAXPTS) < MINPTS"
+    ifail == 9 && return "both ABSTOL < 0 and RELTOL < 0"
+    ifail == 11 && return "SINGUL < 1 or SINGUL > NDIM"
+    ifail == 12 && return "LOGF is not 0 or 1"
+    ifail == 13 && return "maxiters (MAXPTS) too small for the first rule applications"
+    ifail == 14 && return "ALPHA estimation failed or ALPHA <= -SINGUL (integral may not exist)"
+    ifail == 15 && return "EMAX < 1"
+    ifail == 17 && return "WRKSUB too small for the requested budget"
+    return "unknown IFAIL code $ifail"
+end
+
 # ============================================================
 # _check_params — port of DECHHR
 #
@@ -128,25 +154,27 @@ end
 # Returns the new heap size (sbrgns - 1).
 # ============================================================
 function _heap_pop!(greate::AbstractVector, list::Vector{Int}, sbrgns::Int)::Int
-    great = greate[list[sbrgns]]   # value of last element (will replace top)
-    new_sbrgns = sbrgns - 1
-    subrgn = 1
-    while true
-        subtmp = 2 * subrgn
-        subtmp > new_sbrgns && break
-        # Choose the larger child
-        if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp + 1]]
-            subtmp += 1
+    @inbounds begin
+        great = greate[list[sbrgns]]   # value of last element (will replace top)
+        new_sbrgns = sbrgns - 1
+        subrgn = 1
+        while true
+            subtmp = 2 * subrgn
+            subtmp > new_sbrgns && break
+            # Choose the larger child
+            if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp + 1]]
+                subtmp += 1
+            end
+            # Sift down if necessary
+            if great < greate[list[subtmp]]
+                list[subrgn] = list[subtmp]
+                subrgn = subtmp
+            else
+                break
+            end
         end
-        # Sift down if necessary
-        if great < greate[list[subtmp]]
-            list[subrgn] = list[subtmp]
-            subrgn = subtmp
-        else
-            break
-        end
+        new_sbrgns > 0 && (list[subrgn] = list[new_sbrgns + 1])
     end
-    new_sbrgns > 0 && (list[subrgn] = list[new_sbrgns + 1])
     return new_sbrgns
 end
 
@@ -160,19 +188,21 @@ function _heap_push!(
         greate::AbstractVector, list::Vector{Int},
         new_pos::Int, new_idx::Int
     )
-    great = greate[new_idx]
-    subrgn = new_pos
-    while true
-        subtmp = subrgn ÷ 2
-        subtmp < 1 && break
-        if great > greate[list[subtmp]]
-            list[subrgn] = list[subtmp]
-            subrgn = subtmp
-        else
-            break
+    @inbounds begin
+        great = greate[new_idx]
+        subrgn = new_pos
+        while true
+            subtmp = subrgn ÷ 2
+            subtmp < 1 && break
+            if great > greate[list[subtmp]]
+                list[subrgn] = list[subtmp]
+                subrgn = subtmp
+            else
+                break
+            end
         end
+        list[subrgn] = new_idx
     end
-    list[subrgn] = new_idx
     return nothing
 end
 

@@ -97,6 +97,10 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
   default) triggers automatic estimation via `DECALP`.
 - For regular (non-singular) integrands set `singul=1` and leave `alpha` at
   its default; the algorithm degrades gracefully to ordinary adaptive Gauss.
+- For vector integrands the in-place SciML form
+  `IntegralFunction((y, u, p) -> (y .= ...), prototype)` is the
+  zero-allocation route: the out-of-place form allocates its returned vector
+  at every integrand evaluation.
 
 ## Return codes
 
@@ -123,6 +127,7 @@ inspect `sol.resid`.
 |:---------------------|:--------|
 | `sol.stats.numevals` | Number of integrand evaluations performed |
 | `sol.stats.ifail`    | Raw DECUHR `IFAIL` code (0 = success, 1 = budget hit, …) |
+| `sol.stats.message`  | Human-readable description of the `IFAIL` code |
 
 ## Automatic differentiation
 
@@ -257,8 +262,67 @@ function _decuhr_driver(
 end
 
 # ============================================================
+# Integrals.__solve — skip the ChangeOfVariables remap on finite domains
+# ============================================================
+
+# DECUHR integrates a finite hyperrectangle natively, with the singularity
+# pinned at the lower vertex a[1:singul].  `Integrals.init` wraps every
+# tuple-domain problem in `ChangeOfVariables(transformation_if_inf, alg)`,
+# which remaps [lb, ub] → [-1, 1] and multiplies by the Jacobian at every
+# evaluation.  Near the singular vertex the remapped coordinate 1 + t is
+# quantised at the machine spacing around -1 (≈ 1e-16 in absolute distance to
+# the corner, versus subnormal resolution at a native 0.0 corner), which
+# distorts the singular subdivision geometry and can stall the U-series
+# extrapolation: ∫(x·y)^(-1/2) needs 110_045 evaluations natively but
+# exhausts a 10^6 budget through the remap.  Integrating in native
+# coordinates also makes `solve` agree bit-for-bit with the Fortran-validated
+# driver.  Infinite domains keep the standard transformation (and DECUHR's
+# vertex-singularity semantics do not apply to them anyway).
+function Integrals.__solve(
+        cache::Integrals.IntegralCache,
+        alg::Integrals.ChangeOfVariables{T, DecuhrAlgorithm},
+        sensealg, udomain, p;
+        kwargs...
+    ) where {T}
+    lb, ub = udomain
+    if all(isfinite, lb) && all(isfinite, ub)
+        # __solvebp (not __solvebp_call) keeps the ForwardDiff intercept active.
+        return Integrals.__solvebp(cache, alg.alg, sensealg, udomain, p; kwargs...)
+    end
+    return invoke(
+        Integrals.__solve,
+        Tuple{Integrals.IntegralCache, Integrals.ChangeOfVariables, Any, Any, Any},
+        cache, alg, sensealg, udomain, p; kwargs...
+    )
+end
+
+# ============================================================
 # Integrals.__solvebp_call — Integrals.jl integration hook
 # ============================================================
+
+"""
+    _make_funsub(f, p, ::Val{iip}, numfun, ::Type{TV})
+
+Build the DECUHR `funsub(x, funvls)` closure from a SciML `IntegralFunction`.
+A function barrier keyed on `Val(iip)` so each of the three integrand shapes
+(in-place, out-of-place scalar, out-of-place vector) gets its own type-stable
+closure.  `funvls` may be a SubArray (column-view from rules.jl).
+
+The in-place form `f(y, u, p)` writes into `funvls` directly and is the
+zero-allocation route for vector integrands; the out-of-place vector form
+necessarily allocates its return value at every evaluation.
+"""
+function _make_funsub(f, p, ::Val{true}, numfun::Int, ::Type{TV}) where {TV}
+    return (x, funvls) -> (f(funvls, x, p); nothing)
+end
+function _make_funsub(f, p, ::Val{false}, numfun::Int, ::Type{TV}) where {TV}
+    if numfun == 1
+        return (x, funvls) -> (funvls[1] = f(x, p); nothing)
+    else
+        return (x, funvls) -> (copyto!(funvls, f(x, p)); nothing)
+    end
+end
+
 function Integrals.__solvebp_call(
         cache::Integrals.IntegralCache,
         alg::DecuhrAlgorithm,
@@ -270,23 +334,35 @@ function Integrals.__solvebp_call(
     )
 
     lb, ub = domain
+    if lb isa Number
+        throw(
+            ArgumentError(
+                "DECUHR handles 2 ≤ ndim ≤ $(_MAXDIM) only; pass the domain as " *
+                    "vectors, e.g. ([0.0, 0.0], [1.0, 1.0])."
+            )
+        )
+    end
     ndim = length(lb)
     f = cache.f   # IntegralFunction wrapping the user's integrand
+    iip = SciMLBase.isinplace(f)
 
-    # Detect numfun and value type TV via a single test evaluation at the midpoint.
-    # TV may be a dual-number type when differentiating w.r.t. parameters p.
-    xmid = (lb .+ ub) ./ 2
-    test_out = f(xmid, p)
-    numfun = test_out isa Number ? 1 : length(test_out)
-    TV = test_out isa Number ? typeof(test_out) : eltype(test_out)
-
-    # Wrap SciML f(u, p) → DECUHR funsub(x, funvls).
-    # funvls may be a SubArray (column-view from rules.jl); no type restriction.
-    if numfun == 1
-        funsub = (x, funvls) -> (funvls[1] = f(x, p); nothing)
+    # Detect numfun and the value type TV.  In-place integrands declare both via
+    # their prototype (no probe evaluation); out-of-place integrands are probed
+    # once at the midpoint.  TV may be a dual-number type when differentiating
+    # w.r.t. parameters p.
+    if iip
+        proto = f.integrand_prototype
+        numfun = length(proto)
+        TV = eltype(proto)
     else
-        funsub = (x, funvls) -> (copyto!(funvls, f(x, p)); nothing)
+        xmid = (lb .+ ub) ./ 2
+        test_out = f(xmid, p)
+        numfun = test_out isa Number ? 1 : length(test_out)
+        TV = test_out isa Number ? typeof(test_out) : eltype(test_out)
     end
+
+    # Wrap SciML f → DECUHR funsub(x, funvls) through the function barrier.
+    funsub = _make_funsub(f, p, Val(iip), numfun, TV)
 
     result, abserr, neval, ifail = _decuhr_driver(
         ndim, numfun,
@@ -316,7 +392,7 @@ function Integrals.__solvebp_call(
     return SciMLBase.build_solution(
         prob, alg, u, err;
         retcode = retcode,
-        stats = (numevals = neval, ifail = ifail)
+        stats = (numevals = neval, ifail = ifail, message = ifail_message(ifail))
     )
 end
 

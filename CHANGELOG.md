@@ -1,5 +1,54 @@
 # Changelog
 
+## v0.2.0 — 2026-07-03
+
+### Changed
+
+- **`solve` now integrates in native coordinates** on finite domains, skipping
+  the `ChangeOfVariables` remap (`[lb, ub] → [-1, 1]` plus a Jacobian factor at
+  every evaluation) that `Integrals.init` applies to every tuple-domain
+  problem. Near the singular vertex the remapped coordinate is quantised at
+  the machine spacing around −1, which distorted the singular subdivision
+  geometry and could stall the extrapolation: `∫₀¹∫₀¹ (x·y)^(-1/2)` converges
+  in 110 045 evaluations natively but exhausted a 10⁶ budget (returning
+  `MaxIters`) through the remap, ~26× slower. `solve` results consequently
+  change in their last bits (and occasionally in return code, for the better)
+  relative to v0.1.x: **`solve` is now bit-for-bit identical to the
+  Fortran-validated driver** on the six canonical Espelid–Genz cases.
+  Measured on those cases: `(x·y)^(-1/2)` 95 ms → 3.6 ms with `MaxIters` →
+  `Success`; `(x·y·z)^(-1/3)` and `-log(x·y)` ~3.3× faster; a ForwardDiff
+  derivative through a singular integrand 110 ms → 4.8 ms with ~400× fewer
+  allocations. Infinite domains keep the standard transformation path and
+  behave exactly as before.
+
+### Added
+
+- **In-place integrands**: `IntegralFunction((y, u, p) -> …, prototype)` is
+  now supported and is the zero-allocation route for vector integrands
+  (`numfun` and the value type are read off the prototype; no probe
+  evaluation). A singular two-component benchmark drops from 8.1 M
+  allocations / 341 MB to 230 k / 10.7 MB per solve.
+- `sol.stats.message`: human-readable description of the raw `ifail` code
+  (`DECUHR.ifail_message`, unexported).
+- **Bit-exact golden tests**: the six canonical cases are locked bit-for-bit
+  (result, error estimate, `neval`, `ifail`) at both the driver and the
+  `solve` level, so any change in the numerical path fails loudly. Test suite
+  extended from 27 to 140 assertions (all previously untested `ifail` codes,
+  automatic log-factor detection, 4-D rules, singular vector integrands,
+  scalar-domain error, infinite-domain path).
+
+### Performance
+
+- `@inbounds` in the hot loops (rule evaluation, fully-symmetric sums, region
+  heap) and value-typed accumulators in `_eval_rule!` (previously
+  `Float64`-initialised and promoted to dual numbers under AD): core driver
+  ~5–11 % faster on the canonical cases, bit-for-bit unchanged results
+  (verified under `--check-bounds=yes` and `--check-bounds=no`).
+
+### Removed
+
+- Stale `.JuliaFormatter.toml` (blue style): the CI formatter is Runic.
+
 ## v0.1.3 — 2026-06-01
 
 ### Changed

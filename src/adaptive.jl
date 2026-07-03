@@ -128,25 +128,27 @@ end
 # Returns the new heap size (sbrgns - 1).
 # ============================================================
 function _heap_pop!(greate::AbstractVector, list::Vector{Int}, sbrgns::Int)::Int
-    great = greate[list[sbrgns]]   # value of last element (will replace top)
-    new_sbrgns = sbrgns - 1
-    subrgn = 1
-    while true
-        subtmp = 2 * subrgn
-        subtmp > new_sbrgns && break
-        # Choose the larger child
-        if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp + 1]]
-            subtmp += 1
+    @inbounds begin
+        great = greate[list[sbrgns]]   # value of last element (will replace top)
+        new_sbrgns = sbrgns - 1
+        subrgn = 1
+        while true
+            subtmp = 2 * subrgn
+            subtmp > new_sbrgns && break
+            # Choose the larger child
+            if subtmp < new_sbrgns && greate[list[subtmp]] < greate[list[subtmp + 1]]
+                subtmp += 1
+            end
+            # Sift down if necessary
+            if great < greate[list[subtmp]]
+                list[subrgn] = list[subtmp]
+                subrgn = subtmp
+            else
+                break
+            end
         end
-        # Sift down if necessary
-        if great < greate[list[subtmp]]
-            list[subrgn] = list[subtmp]
-            subrgn = subtmp
-        else
-            break
-        end
+        new_sbrgns > 0 && (list[subrgn] = list[new_sbrgns + 1])
     end
-    new_sbrgns > 0 && (list[subrgn] = list[new_sbrgns + 1])
     return new_sbrgns
 end
 
@@ -160,19 +162,21 @@ function _heap_push!(
         greate::AbstractVector, list::Vector{Int},
         new_pos::Int, new_idx::Int
     )
-    great = greate[new_idx]
-    subrgn = new_pos
-    while true
-        subtmp = subrgn ÷ 2
-        subtmp < 1 && break
-        if great > greate[list[subtmp]]
-            list[subrgn] = list[subtmp]
-            subrgn = subtmp
-        else
-            break
+    @inbounds begin
+        great = greate[new_idx]
+        subrgn = new_pos
+        while true
+            subtmp = subrgn ÷ 2
+            subtmp < 1 && break
+            if great > greate[list[subtmp]]
+                list[subrgn] = list[subtmp]
+                subrgn = subtmp
+            else
+                break
+            end
         end
+        list[subrgn] = new_idx
     end
-    list[subrgn] = new_idx
     return nothing
 end
 

@@ -127,6 +127,7 @@ inspect `sol.resid`.
 |:---------------------|:--------|
 | `sol.stats.numevals` | Number of integrand evaluations performed |
 | `sol.stats.ifail`    | Raw DECUHR `IFAIL` code (0 = success, 1 = budget hit, …) |
+| `sol.stats.message`  | Human-readable description of the `IFAIL` code |
 
 ## Automatic differentiation
 
@@ -356,7 +357,7 @@ function Integrals.__solvebp_call(
     return SciMLBase.build_solution(
         prob, alg, u, err;
         retcode = retcode,
-        stats = (numevals = neval, ifail = ifail)
+        stats = (numevals = neval, ifail = ifail, message = ifail_message(ifail))
     )
 end
 

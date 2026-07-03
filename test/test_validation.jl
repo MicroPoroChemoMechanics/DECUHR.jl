@@ -10,6 +10,7 @@
     sol = solve(prob2, DecuhrAlgorithm(key = 5))
     @test sol.retcode == RC.Failure
     @test sol.stats.ifail == 2
+    @test sol.stats.message == DECUHR.ifail_message(2)
     # ifail = 3 — NDIM out of range (1 and > 15)
     @test solve(IntegralProblem(f, ([0.0], [1.0])), DecuhrAlgorithm()).stats.ifail == 3
     @test solve(IntegralProblem(f, (zeros(16), ones(16))), DecuhrAlgorithm()).stats.ifail == 3
@@ -52,6 +53,14 @@ end
         1, 0.0, 0, 1.0e-8, 1.0e-6, 0, 50_000, 20
     )
     @test ifail == 7
+end
+
+@testset "ifail_message covers every reachable code" begin
+    for code in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 17)
+        @test DECUHR.ifail_message(code) isa String
+        @test !startswith(DECUHR.ifail_message(code), "unknown")
+    end
+    @test startswith(DECUHR.ifail_message(99), "unknown")
 end
 
 @testset "ifail = 14 — alpha estimation failure" begin

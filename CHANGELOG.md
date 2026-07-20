@@ -137,7 +137,7 @@
 
 ## v0.1.0 — Initial release
 
-First public release of DECUHR.jl, hosted on Codeberg
+First public release of DECUHR.jl, hosted on GitHub
 (`MicroPoroChemoMechanics/DECUHR.jl`) and registered in MPCM-Registry.
 
 Pure-Julia port of the DECUHR algorithm
@@ -171,14 +171,10 @@ singularities** over hyper-rectangular regions.
 
 ### Infrastructure
 
-- Forgejo workflows on Codeberg: CI, Documentation, Release, Runic,
-  Zenodo (`.forgejo/workflows/`).
+- GitHub Actions workflows: CI, Documentation, Register, CompatHelper,
+  Format, TagBot (`.github/workflows/`).
 - Multi-version documentation deployment via `docs/deploy_docs.jl`
   (`stable/`, `dev/`, `vX.Y.Z/`).
-- Runic.yml is `workflow_dispatch` only to keep auto-format under
-  manual control.
-- GitHub workflows kept in `.github/workflows/` as a dormant return
-  path.
 
 ### Provenance
 

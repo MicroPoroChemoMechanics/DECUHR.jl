@@ -1,4 +1,4 @@
-# DECUHR
+# Decuhr
 
 [![Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicroPoroChemoMechanics.github.io/DECUHR.jl/stable/)
 [![Dev](https://img.shields.io/badge/docs-dev-blue.svg)](https://MicroPoroChemoMechanics.github.io/DECUHR.jl/dev/)

@@ -141,7 +141,7 @@ First public release of DECUHR.jl, hosted on GitHub
 (`MicroPoroChemoMechanics/DECUHR.jl`) and registered in MPCM-Registry.
 
 Pure-Julia port of the DECUHR algorithm
-([Espelid & Genz, *Numerical Algorithms* 8 (1994), 201–220](https://doi.org/10.1007/BF02142690))
+([Espelid & Genz, *Numerical Algorithms* 8 (1994), 201–220](https://doi.org/10.1007/BF02142691))
 for automatic adaptive integration of functions with **vertex
 singularities** over hyper-rectangular regions.
 

@@ -1,22 +1,22 @@
 using Documenter
-using DECUHR
+using Decuhr
 
 DocMeta.setdocmeta!(
-    DECUHR,
+    Decuhr,
     :DocTestSetup,
-    :(using DECUHR);
+    :(using Decuhr);
     recursive = true,
 )
 
 makedocs(
     clean    = false,
-    modules  = [DECUHR],
+    modules  = [Decuhr],
     remotes  = nothing,
     authors  = "Jean-François Barthélémy",
-    sitename = "DECUHR.jl",
+    sitename = "Decuhr.jl",
     format   = Documenter.HTML(;
-        canonical     = "https://MicroPoroChemoMechanics.github.io/DECUHR.jl",
-        repolink      = "https://github.com/MicroPoroChemoMechanics/DECUHR.jl",
+        canonical     = "https://MicroPoroChemoMechanics.github.io/Decuhr.jl",
+        repolink      = "https://github.com/MicroPoroChemoMechanics/Decuhr.jl",
         edit_link     = "main",
         assets        = ["assets/custom.css"],
         prettyurls    = (get(ENV, "CI", nothing) == "true"),
@@ -35,7 +35,7 @@ makedocs(
 )
 
 deploydocs(;
-    repo         = "github.com/MicroPoroChemoMechanics/DECUHR.jl.git",
+    repo         = "github.com/MicroPoroChemoMechanics/Decuhr.jl.git",
     devbranch    = "main",
     push_preview = false,
 )

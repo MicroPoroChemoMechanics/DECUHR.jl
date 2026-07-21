@@ -10,7 +10,7 @@
     sol = solve(prob2, DecuhrAlgorithm(key = 5))
     @test sol.retcode == RC.Failure
     @test sol.stats.ifail == 2
-    @test sol.stats.message == DECUHR.ifail_message(2)
+    @test sol.stats.message == Decuhr.ifail_message(2)
     # ifail = 3 — NDIM out of range (1 and > 15)
     @test solve(IntegralProblem(f, ([0.0], [1.0])), DecuhrAlgorithm()).stats.ifail == 3
     @test solve(IntegralProblem(f, (zeros(16), ones(16))), DecuhrAlgorithm()).stats.ifail == 3
@@ -48,7 +48,7 @@ end
     # Integrals.jl's change of variables absorbs reversed bounds before DECUHR
     # sees them, so this code is only reachable through the driver.
     funsub = (x, fv) -> (fv[1] = 1.0; nothing)
-    _, _, _, ifail = DECUHR._decuhr_driver(
+    _, _, _, ifail = Decuhr._decuhr_driver(
         2, 1, [1.0, 1.0], [0.0, 0.0], 0, 100_000, funsub, Float64,
         1, 0.0, 0, 1.0e-8, 1.0e-6, 0, 50_000, 20
     )
@@ -57,10 +57,10 @@ end
 
 @testset "ifail_message covers every reachable code" begin
     for code in (0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 11, 12, 13, 14, 15, 17)
-        @test DECUHR.ifail_message(code) isa String
-        @test !startswith(DECUHR.ifail_message(code), "unknown")
+        @test Decuhr.ifail_message(code) isa String
+        @test !startswith(Decuhr.ifail_message(code), "unknown")
     end
-    @test startswith(DECUHR.ifail_message(99), "unknown")
+    @test startswith(Decuhr.ifail_message(99), "unknown")
 end
 
 @testset "Infinite domains keep the standard transformation path" begin

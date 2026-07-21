@@ -29,7 +29,7 @@
   evaluation). A singular two-component benchmark drops from 8.1 M
   allocations / 341 MB to 230 k / 10.7 MB per solve.
 - `sol.stats.message`: human-readable description of the raw `ifail` code
-  (`DECUHR.ifail_message`, unexported).
+  (`Decuhr.ifail_message`, unexported).
 - **Bit-exact golden tests**: the six canonical cases are locked bit-for-bit
   (result, error estimate, `neval`, `ifail`) at both the driver and the
   `solve` level, so any change in the numerical path fails loudly. Test suite
@@ -137,8 +137,8 @@
 
 ## v0.1.0 — Initial release
 
-First public release of DECUHR.jl, hosted on GitHub
-(`MicroPoroChemoMechanics/DECUHR.jl`) and registered in MPCM-Registry.
+First public release of Decuhr.jl, hosted on GitHub
+(`MicroPoroChemoMechanics/Decuhr.jl`).
 
 Pure-Julia port of the DECUHR algorithm
 ([Espelid & Genz, *Numerical Algorithms* 8 (1994), 201–220](https://doi.org/10.1007/BF02142691))

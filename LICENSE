@@ -24,7 +24,7 @@ SOFTWARE.
                      Upstream / third-party notice
 ======================================================================
 
-DECUHR.jl is a Julia port and modification of the Fortran 77 DECUHR
+Decuhr.jl is a Julia port and modification of the Fortran 77 DECUHR
 routines published by T. O. Espelid and A. Genz, "DECUHR: An Algorithm
 for Automatic Integration of Singular Functions over a Hyperrectangular
 Region", Numerical Algorithms 8 (1994), 201–220.
@@ -36,6 +36,6 @@ any software which is or includes a copy or modification of the
 upstream software, and in all copies of the supporting documentation
 for such software.
 
-Accordingly, every copy and every derivative work of DECUHR.jl MUST
+Accordingly, every copy and every derivative work of Decuhr.jl MUST
 retain both this `LICENSE` file and the accompanying `NOTICE` file
 unmodified.

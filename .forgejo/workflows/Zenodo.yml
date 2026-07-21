@@ -1,9 +1,9 @@
 name: Zenodo
 
 # IMPORTANT: This workflow requires a Zenodo concept (parent record) to exist.
-# DECUHR.jl has NOT been archived on Zenodo yet — before the first run:
+# Decuhr.jl has NOT been archived on Zenodo yet — before the first run:
 #   1. Go to zenodo.org → "New Upload" and create a minimal record manually:
-#        title       = "DECUHR.jl"
+#        title       = "Decuhr.jl"
 #        upload type = Software / Computer program
 #        creator     = Jean-François Barthélémy (Cerema, UMR MCD)
 #        license     = MIT
@@ -15,7 +15,7 @@ name: Zenodo
 #   3. Replace the placeholder `CONCEPT_ID=000000000` below with that number.
 #   4. Add the badge to README.md and the DOI to CITATION.cff.
 #
-# Note: DECUHR.jl is a Julia port of the Fortran DECUHR algorithm by
+# Note: Decuhr.jl is a Julia port of the Fortran DECUHR algorithm by
 # Espelid & Genz (1994). Zenodo archiving here is for the *port* itself
 # (citability of the Julia implementation). The upstream Fortran package
 # carries its own copyright — see NOTICE in the repo root.
@@ -43,7 +43,7 @@ jobs:
           ZENODO_TOKEN: ${{ secrets.ZENODO_TOKEN }}
         run: |
           ZCURL="curl -s --retry 5 --retry-delay 30 --max-time 60"
-          CONCEPT_ID=000000000   # ← replace with DECUHR.jl concept ID
+          CONCEPT_ID=000000000   # ← replace with Decuhr.jl concept ID
           LATEST=$($ZCURL "https://zenodo.org/api/records?q=conceptrecid:$CONCEPT_ID&sort=mostrecent&size=1" \
             -H "Authorization: Bearer $ZENODO_TOKEN")
           LATEST_ID=$(echo "$LATEST" | grep -o '"id": *[0-9][0-9]*' | head -1 | tr -dc '0-9')
@@ -93,7 +93,7 @@ jobs:
           meta = {
               'resource_type': {'type': 'software', 'subtype': 'computer-program'},
               'creators': [{'person_name': 'Jean-François Barthélémy', 'affiliation': 'Cerema, UMR MCD'}],
-              'title': 'DECUHR.jl',
+              'title': 'Decuhr.jl',
               'version': sys.argv[1],
               'publication_date': sys.argv[2],
               'description': 'Julia port of the DECUHR algorithm (Espelid and Genz, 1994) for automatic adaptive integration of functions with vertex singularities over hyper-rectangular regions. Exposed as a pluggable algorithm for the SciML Integrals.jl solver stack.',
@@ -125,9 +125,9 @@ jobs:
           ZCURL="curl -s --retry 3 --retry-delay 20 --max-time 120"
           NEW_ID="${{ steps.zenodo_draft.outputs.new_id }}"
           VERSION="${{ steps.version.outputs.value }}"
-          FILENAME="DECUHR.jl-v${VERSION}.tar.gz"
+          FILENAME="Decuhr.jl-v${VERSION}.tar.gz"
           echo "Draft ID: $NEW_ID  Archive: $FILENAME"
-          git archive --format=tar.gz --prefix="DECUHR.jl-${VERSION}/" -o "$FILENAME" HEAD
+          git archive --format=tar.gz --prefix="Decuhr.jl-${VERSION}/" -o "$FILENAME" HEAD
           ls -lh "$FILENAME"
           # Delete any existing files on the draft before uploading the new archive.
           FILES_RESP=$($ZCURL "https://zenodo.org/api/records/$NEW_ID/draft/files" \

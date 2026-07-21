@@ -22,7 +22,7 @@
 # Numerical Algorithms 8 (1994), pp. 201-220.
 #
 """
-    DECUHR
+    Decuhr
 
 Pure-Julia port of the DECUHR algorithm (Espelid & Genz, 1994) for automatic
 integration of functions with vertex singularities over hyper-rectangular
@@ -34,7 +34,7 @@ through the `SciMLBase.AbstractIntegralAlgorithm` interface.
 ## Quick start
 
 ```julia
-using Integrals, DECUHR
+using Integrals, Decuhr
 
 # ∫∫₀¹ (x·y)^{-0.5} dx dy = π²/4
 f = (u, p) -> (u[1]*u[2])^(-0.5)
@@ -57,7 +57,7 @@ modification of the Fortran 77 DECUHR routines, it additionally carries the
 upstream copyright notice of Espelid & Genz, reproduced verbatim in `NOTICE`.
 Both files MUST be shipped with every copy and every derivative work.
 """
-module DECUHR
+module Decuhr
 
 using SciMLBase, Integrals
 
@@ -396,4 +396,4 @@ function Integrals.__solvebp_call(
     )
 end
 
-end  # module DECUHR
+end  # module Decuhr

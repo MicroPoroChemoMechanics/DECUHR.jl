@@ -38,7 +38,7 @@
     ifail_message(ifail::Integer) -> String
 
 Human-readable description of a raw DECUHR `IFAIL` code (as exposed in
-`sol.stats.ifail`).  Not exported; call as `DECUHR.ifail_message(code)`.
+`sol.stats.ifail`).  Not exported; call as `Decuhr.ifail_message(code)`.
 """
 function ifail_message(ifail::Integer)
     ifail == 0 && return "normal exit: requested accuracy reached"

@@ -1,6 +1,6 @@
 # Comparaison directe au Fortran de référence (Espelid & Genz, 1994)
 
-Validation de ce portage Julia (`DECUHR.jl`) par comparaison **bit-à-bit** avec
+Validation de ce portage Julia (`Decuhr.jl`) par comparaison **bit-à-bit** avec
 la subroutine Fortran `DECUHR` d'origine, compilée localement (gfortran/MinGW),
 sur **6 cas** (définis à l'identique dans `driver.f90` et
 `run_julia_fullprec.jl`) avec **exactement les mêmes paramètres** :
@@ -17,13 +17,13 @@ minpts=0  key=0  restar=0  numfun=1
 | `src_fortran/` | **Copie** des 14 sources Fortran de référence (`*.f`) |
 | `Makefile` | Compile les 14 sources + le driver → `decuhr_cmp.exe` |
 | `driver.f90` | Programme appelant `DECUHR` sur les 6 cas (C1–C6) |
-| `run_julia_fullprec.jl` | Mêmes cas via le cœur Julia `DECUHR._decuhr_driver`, pleine précision |
+| `run_julia_fullprec.jl` | Mêmes cas via le cœur Julia `Decuhr._decuhr_driver`, pleine précision |
 | `logs/run_fortran.log` | Sortie du binaire Fortran |
 | `logs/run_julia.log` | Sortie Julia pleine précision |
 
 ## Résultats — Fortran vs Julia (pleine précision)
 
-| Cas | Fortran (référence) | Julia (`DECUHR.jl`) | Écart absolu | `IFAIL` (F / J) | `NEVAL` (F / J) |
+| Cas | Fortran (référence) | Julia (`Decuhr.jl`) | Écart absolu | `IFAIL` (F / J) | `NEVAL` (F / J) |
 |---|---|---|---|:---:|:---:|
 | C1 `(x·y)^(-1/2)`     | `4.000060778932444` | `4.000060778932444` | **0** (identique) | 0 / 0 | 110045 / 110045 |
 | C2 `1/√(x²+y²)`       | `1.762747166075242` | `1.762747166075242` | **0** | 0 / 0 | 715 / 715 |
@@ -78,5 +78,5 @@ La cible `make run` compile puis exécute ; `make clean` supprime l'exécutable.
 > Les sources Fortran de `src_fortran/` portent le copyright Espelid & Genz
 > reproduit en tête de chaque fichier (leur licence autorise explicitement la
 > copie tant que cette notice est conservée — cf. `NOTICE` à la racine du
-> dépôt). Ce dossier fait partie du dépôt `DECUHR.jl` comme banc de validation
+> dépôt). Ce dossier fait partie du dépôt `Decuhr.jl` comme banc de validation
 > reproductible ; il n'est pas exécuté par la CI (`Pkg.test`).

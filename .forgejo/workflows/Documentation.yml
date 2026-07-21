@@ -50,11 +50,11 @@ jobs:
         run: |
           julia --project=docs/ -e '
             using Documenter: DocMeta, doctest
-            using DECUHR
-            DocMeta.setdocmeta!(DECUHR, :DocTestSetup,
-                :(using DECUHR);
+            using Decuhr
+            DocMeta.setdocmeta!(Decuhr, :DocTestSetup,
+                :(using Decuhr);
                 recursive=true)
-            doctest(DECUHR)
+            doctest(Decuhr)
           '
 
       - name: Build and deploy

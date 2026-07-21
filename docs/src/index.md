@@ -1,4 +1,4 @@
-# DECUHR.jl
+# Decuhr.jl
 
 Pure-Julia port of the **DECUHR** algorithm (Espelid & Genz, 1994) for automatic
 adaptive integration of functions with **homogeneous vertex singularities** over
@@ -12,15 +12,15 @@ ecosystem through the standard `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 ```julia
 using Pkg
-Pkg.develop(path = "path/to/DECUHR.jl")   # local development
+Pkg.develop(path = "path/to/Decuhr.jl")   # local development
 # or, once registered:
-# Pkg.add("DECUHR")
+# Pkg.add("Decuhr")
 ```
 
 ## Quick start
 
 ```julia
-using Integrals, DECUHR
+using Integrals, Decuhr
 
 # ∫₀¹∫₀¹ (x·y)^{-1/2} dx dy = 4
 f    = (u, p) -> (u[1] * u[2])^(-0.5)

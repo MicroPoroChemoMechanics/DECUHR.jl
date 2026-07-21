@@ -1,5 +1,5 @@
 [deps]
-DECUHR = "d5c0ea0e-a2e6-4e56-a5f3-17f3ec7c9d22"
+Decuhr = "d5c0ea0e-a2e6-4e56-a5f3-17f3ec7c9d22"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 Integrals = "de52edbc-65ea-441a-8357-d3a637375a31"

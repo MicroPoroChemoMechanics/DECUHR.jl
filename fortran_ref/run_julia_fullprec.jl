@@ -1,8 +1,8 @@
-# Resultats Julia (DECUHR.jl) en PLEINE precision, memes cas/parametres que le
+# Resultats Julia (Decuhr.jl) en PLEINE precision, memes cas/parametres que le
 # driver Fortran (driver.f90), pour une comparaison bit-a-bit avec la reference.
 import Pkg
-Pkg.activate(joinpath(@__DIR__, ".."))   # le package DECUHR.jl (dossier parent)
-using DECUHR
+Pkg.activate(joinpath(@__DIR__, ".."))   # le package Decuhr.jl (dossier parent)
+using Decuhr
 using Printf
 
 const B = 1_000_000
@@ -22,7 +22,7 @@ println("case          result                exact                relerr      if
 for (name, f, lb, ub, singul, alpha, logf, exact) in cases
     ndim = length(lb)
     funsub = (x, fv) -> (fv[1] = f(x); nothing)
-    r, e, neval, ifail = DECUHR._decuhr_driver(
+    r, e, neval, ifail = Decuhr._decuhr_driver(
         ndim, 1, lb, ub, 0, B, funsub, Float64, singul, alpha, logf, 1.0e-8, 1.0e-6, 0, W, E)
     relerr = abs(r[1]-exact)/abs(exact)
     @printf("%-12s  %.15E  %.13E  %.3E  %3d  %9d\n", name, r[1], exact, relerr, ifail, neval)

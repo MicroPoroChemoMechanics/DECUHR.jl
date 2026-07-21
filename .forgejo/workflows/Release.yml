@@ -46,7 +46,7 @@ jobs:
             using LocalRegistry
             Pkg.Registry.add(RegistrySpec(url="https://codeberg.org/MicroPoroChemoMechanics/MPCM-Registry.git"))
             register(pwd(); registry="MPCM-Registry", push=true,
-                     repo="https://codeberg.org/MicroPoroChemoMechanics/DECUHR.jl.git",
+                     repo="https://codeberg.org/MicroPoroChemoMechanics/Decuhr.jl.git",
                      ignore_reregistration=true)
           '
 
@@ -63,7 +63,7 @@ jobs:
         run: |
           VERSION=v${{ steps.version.outputs.value }}
           RESP=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST \
-            "https://codeberg.org/api/v1/repos/MicroPoroChemoMechanics/DECUHR.jl/releases" \
+            "https://codeberg.org/api/v1/repos/MicroPoroChemoMechanics/Decuhr.jl/releases" \
             -H "Authorization: token $PUSH_TOKEN" \
             -H "Content-Type: application/json" \
             -d "{\"tag_name\":\"$VERSION\",\"name\":\"$VERSION\",\"body\":\"Release $VERSION\",\"draft\":false,\"prerelease\":false}")

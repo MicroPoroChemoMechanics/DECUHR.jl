@@ -1,4 +1,4 @@
-DECUHR.jl — Third-party / upstream notice
+Decuhr.jl — Third-party / upstream notice
 ==========================================
 
 This package is a Julia port of the DECUHR Fortran 77 algorithm published by
@@ -10,7 +10,7 @@ This package is a Julia port of the DECUHR Fortran 77 algorithm published by
 
 The original Fortran source, as distributed with the journal "Numerical
 Algorithms", carries the following notice. It is reproduced here verbatim
-and must be preserved in every copy and every derivative work of DECUHR.jl,
+and must be preserved in every copy and every derivative work of Decuhr.jl,
 in accordance with the terms it states:
 
     ***************************************************************************
@@ -35,7 +35,7 @@ in accordance with the terms it states:
 Scope
 -----
 
-DECUHR.jl is a translation of, and a modification of, the Fortran routines
+Decuhr.jl is a translation of, and a modification of, the Fortran routines
 DECHHR, DETRHR, DESBHR, DEADHR, DECALP, D132RE, D113RE, D09HRE, D07HRE,
 DEINHR, DEFSHR and DERLHR described in the 1994 paper. The present Julia
 implementation, together with its Integrals.jl integration layer, test suite

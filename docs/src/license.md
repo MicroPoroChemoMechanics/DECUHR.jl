@@ -1,8 +1,8 @@
 # License
 
-The Julia port — `DECUHR.jl`, i.e. this package, its test suite and its
+The Julia port — `Decuhr.jl`, i.e. this package, its test suite and its
 documentation — is released under the **MIT License**, reproduced in the
-repository file [`LICENSE`](https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/LICENSE).
+repository file [`LICENSE`](https://github.com/MicroPoroChemoMechanics/Decuhr.jl/blob/main/LICENSE).
 
     MIT License
 
@@ -29,7 +29,7 @@ repository file [`LICENSE`](https://github.com/MicroPoroChemoMechanics/DECUHR.jl
 
 ## Upstream / third-party notice
 
-`DECUHR.jl` is a Julia translation and modification of the Fortran 77 DECUHR
+`Decuhr.jl` is a Julia translation and modification of the Fortran 77 DECUHR
 routines published by
 
 > T. O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic Integration
@@ -38,12 +38,12 @@ routines published by
 
 The upstream Fortran distribution carries its own copyright notice,
 reproduced below verbatim and also stored in the repository file
-[`NOTICE`](https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/NOTICE). That
+[`NOTICE`](https://github.com/MicroPoroChemoMechanics/Decuhr.jl/blob/main/NOTICE). That
 notice requires that it be included in all copies of any software which is
 or includes a copy or modification of the upstream software, and in all
 copies of the supporting documentation.
 
-Accordingly, **every copy and every derivative work of `DECUHR.jl` MUST
+Accordingly, **every copy and every derivative work of `Decuhr.jl` MUST
 retain both `LICENSE` and `NOTICE` unmodified, and documentation builds
 based on this source tree MUST continue to render the present page**.
 

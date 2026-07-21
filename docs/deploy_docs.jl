@@ -34,7 +34,7 @@ end
 
 builddir    = joinpath(docsdir, "build")
 packagedir  = dirname(docsdir)
-repo_remote = "git@codeberg-docs:MicroPoroChemoMechanics/DECUHR.jl.git"
+repo_remote = "git@codeberg-docs:MicroPoroChemoMechanics/Decuhr.jl.git"
 
 # ── Deployment target ─────────────────────────────────────────────────────────
 # DEPLOY_TARGET = nothing       # auto-detect from git
@@ -148,7 +148,7 @@ println("✅ index.html → $redirect/")
 # ── Commit and push ────────────────────────────────────────────────────────────
 println("🚀 Pushing pages branch...")
 cd(pagesdir) do
-    run(`git config user.name "DECUHR Documenter"`)
+    run(`git config user.name "Decuhr Documenter"`)
     run(`git config user.email "docs@decuhr.codeberg.page"`)
     run(`git config core.autocrlf false`)
     run(`git add -A`)

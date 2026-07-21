@@ -1,18 +1,18 @@
 # Canonical validation cases C1–C6 (Espelid & Genz 1994), locked BIT-FOR-BIT.
 #
-# The golden values below were captured from DECUHR.jl v0.1.3 on x86-64 /
+# The golden values below were captured from Decuhr.jl v0.1.3 on x86-64 /
 # Julia 1.12 (openlibm) with the exact parameters of fortran_ref/COMPARAISON.md
 # (abstol = 1e-8, reltol = 1e-6, maxpts = 1e6, wrksub = 50000, emax = 20,
 # automatic rule). At the driver level they agree with the original Fortran
 # DECUHR (5/6 cases to the last bit; C4 differs by ~1.3e-10 from Fortran due to
-# a documented floating-point reassociation — the value locked here is DECUHR.jl's own).
+# a documented floating-point reassociation — the value locked here is Decuhr.jl's own).
 #
 # Results are compared by reinterpreting the Float64 bits: any change in the
 # numerical path (reordered accumulation, @simd/@fastmath, different libm,
 # altered subdivision) must fail here and be a deliberate, documented decision.
 #
 # Two levels are locked:
-#   * driver — DECUHR._decuhr_driver, the pure algorithm (the Fortran contract);
+#   * driver — Decuhr._decuhr_driver, the pure algorithm (the Fortran contract);
 #   * solve  — the user-facing Integrals.jl path.  Since DECUHR skips the
 #     Integrals ChangeOfVariables remap on finite domains, solve agrees with
 #     the driver bit-for-bit (same result, abserr, neval, ifail).
@@ -95,7 +95,7 @@
 
     @testset "driver: $(c.name)" for c in cases
         funsub = (x, fv) -> (fv[1] = c.f(x); nothing)
-        r, e, neval, ifail = DECUHR._decuhr_driver(
+        r, e, neval, ifail = Decuhr._decuhr_driver(
             length(c.lb), 1, c.lb, c.ub, 0, maxpts, funsub, Float64,
             c.singul, c.alpha, c.logf, abstol, reltol, 0, wrksub, emax
         )

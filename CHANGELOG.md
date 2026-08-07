@@ -132,7 +132,7 @@
 - `[compat]` lower bound for `Integrals` raised to `"5.4"` (was `"5"`),
   the line that ships the modern tuple-domain / `ChangeOfVariables`
   domain handling this release targets. `SciMLBase` stays `"2, 3"`:
-  DECUHR is exercised on both SciMLBase 2.155 (via MeanFieldHom.jl, whose
+  DECUHR is exercised on both SciMLBase 2.155 (via MeanFieldHomogenization.jl, whose
   `OrdinaryDiffEq 6` pins SciMLBase 2) and SciMLBase 3.16 (standalone).
 
 ## v0.1.0 — Initial release

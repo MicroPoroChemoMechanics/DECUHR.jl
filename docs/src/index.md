@@ -11,10 +11,7 @@ ecosystem through the standard `SciMLBase.AbstractIntegralAlgorithm` interface.
 ## Installation
 
 ```julia
-using Pkg
-Pkg.develop(path = "path/to/DECUHR.jl")   # local development
-# or, once registered:
-# Pkg.add("DECUHR")
+import Pkg; Pkg.add("DECUHR")
 ```
 
 ## Quick start

@@ -76,7 +76,7 @@ function _extrapolate!(
     const_val = 10.0  # heuristic constant for error estimation (CONST in DEXTHR)
 
     # -------------------------------------------------------
-    # One-time initialisation (FIRST = .TRUE. in Fortran)
+    # One-time initialization (FIRST = .TRUE. in Fortran)
     # -------------------------------------------------------
     if first_call[]
         # T(J,0) = QOLD(J)  →  t[j,1] = qold[j]
@@ -111,7 +111,7 @@ function _extrapolate!(
             end
         end
 
-        # Initialise beta coefficients
+        # Initialize beta coefficients
         # BETA(0,J)=1; BETA(I,J)=BETA(I,J-1)+(BETA(I,J-1)-BETA(I-1,J-1))/NE(J)
         # for I=1..J; BETA(I,J)=0 for I=J+1..EMAX
         for j_f in 0:emax           # Fortran J = 0..EMAX

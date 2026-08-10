@@ -116,7 +116,7 @@ println("|err| = ", abs(sol6.u - 2.0))
 
 ---
 
-## 7 — Parametrised integral
+## 7 — Parametrized integral
 
 Integral depending on a parameter ``\lambda`` passed via `p`:
 
@@ -143,7 +143,7 @@ end
 
 ## 8 — Automatic differentiation with ForwardDiff
 
-The integrand is parametrised by ``\lambda``. We compute
+The integrand is parametrized by ``\lambda``. We compute
 ``dI/d\lambda`` and ``d^2I/d\lambda^2`` in forward AD mode,
 without finite differences.
 
@@ -263,7 +263,7 @@ println("|err|    = ", abs.(grad .- [exact_dIdλ, exact_dIdμ]))
 
 ## 9 — Budget control (`MaxIters`)
 
-Behaviour when the budget is too tight:
+Behavior when the budget is too tight:
 
 ```@example shared
 sol9 = solve(prob5,

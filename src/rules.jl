@@ -324,7 +324,7 @@ function _init_rule_d9_nd!(ndim, wtleng, w, g, errcof, rulpts)
     g[1, 3] = lam2
     g[1, 2] = lam1
 
-    # Finalise: null rule weights = difference from basic; scale basic rule
+    # Finalize: null rule weights = difference from basic; scale basic rule
     w[1, 1] = twondm
     for jj in 2:5
         for i in 2:wtleng

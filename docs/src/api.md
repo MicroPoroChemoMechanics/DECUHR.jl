@@ -44,8 +44,8 @@ sol  = solve(prob, DecuhrAlgorithm(; kwargs...);
 ## Usage examples
 
 See the dedicated [Examples](@ref) page for complete, executable examples covering:
-singular integrands, vector-valued integrands, parameterised problems,
-automatic differentiation with ForwardDiff, and budget-limit behaviour.
+singular integrands, vector-valued integrands, parameterized problems,
+automatic differentiation with ForwardDiff, and budget-limit behavior.
 
 ## Internal driver (advanced)
 

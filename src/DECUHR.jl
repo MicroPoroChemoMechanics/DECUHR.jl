@@ -270,7 +270,7 @@ end
 # tuple-domain problem in `ChangeOfVariables(transformation_if_inf, alg)`,
 # which remaps [lb, ub] → [-1, 1] and multiplies by the Jacobian at every
 # evaluation.  Near the singular vertex the remapped coordinate 1 + t is
-# quantised at the machine spacing around -1 (≈ 1e-16 in absolute distance to
+# quantized at the machine spacing around -1 (≈ 1e-16 in absolute distance to
 # the corner, versus subnormal resolution at a native 0.0 corner), which
 # distorts the singular subdivision geometry and can stall the U-series
 # extrapolation: ∫(x·y)^(-1/2) needs 110_045 evaluations natively but

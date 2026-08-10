@@ -240,7 +240,7 @@ function _adaptive_integrate!(
     ) where {TV}
 
     # ------------------------------------------------------------------
-    # Initialise integration rule (DEINHR)
+    # Initialize integration rule (DEINHR)
     # Rule coefficients are pure geometry: always Float64.
     # ------------------------------------------------------------------
     g = zeros(Float64, ndim, wtleng)
@@ -293,7 +293,7 @@ function _adaptive_integrate!(
     abserr = zeros(TV, numfun)
 
     # ------------------------------------------------------------------
-    # Initialise: singular region at Julia index 1 (Fortran index 0)
+    # Initialize: singular region at Julia index 1 (Fortran index 0)
     # ------------------------------------------------------------------
     for j in 1:ndim
         centrs[j, 1] = (a[j] + b[j]) / 2.0

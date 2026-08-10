@@ -7,7 +7,7 @@
 - **`solve` now integrates in native coordinates** on finite domains, skipping
   the `ChangeOfVariables` remap (`[lb, ub] → [-1, 1]` plus a Jacobian factor at
   every evaluation) that `Integrals.init` applies to every tuple-domain
-  problem. Near the singular vertex the remapped coordinate is quantised at
+  problem. Near the singular vertex the remapped coordinate is quantized at
   the machine spacing around −1, which distorted the singular subdivision
   geometry and could stall the extrapolation: `∫₀¹∫₀¹ (x·y)^(-1/2)` converges
   in 110 045 evaluations natively but exhausted a 10⁶ budget (returning
@@ -41,7 +41,7 @@
 
 - `@inbounds` in the hot loops (rule evaluation, fully-symmetric sums, region
   heap) and value-typed accumulators in `_eval_rule!` (previously
-  `Float64`-initialised and promoted to dual numbers under AD): core driver
+  `Float64`-initialized and promoted to dual numbers under AD): core driver
   ~5–11 % faster on the canonical cases, bit-for-bit unchanged results
   (verified under `--check-bounds=yes` and `--check-bounds=no`).
 
@@ -119,7 +119,7 @@
 
 - Documentation, examples and tests now construct `IntegralProblem`
   with the **tuple-domain** form `IntegralProblem(f, (lb, ub))`
-  (and `IntegralProblem(f, (lb, ub), p)` for parameterised integrands).
+  (and `IntegralProblem(f, (lb, ub), p)` for parameterized integrands).
   The legacy three-positional-argument form `IntegralProblem(f, lb, ub)`
   is no longer supported by Integrals.jl / SciMLBase (≥ 5.4): the upper
   bound `ub` was silently swallowed as the parameter `p` and `lb` alone
@@ -167,7 +167,7 @@ singularities** over hyper-rectangular regions.
 - Vector-valued integrand support.
 - ForwardDiff-compatible throughout: gradients propagate through both
   integrand and integration domain when the rule is applied to a
-  problem parameterised by `Dual` numbers.
+  problem parameterized by `Dual` numbers.
 
 ### Infrastructure
 

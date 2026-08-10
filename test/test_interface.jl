@@ -1,4 +1,4 @@
-# Integrals.jl-facing behaviour: construction, representative integrals of each
+# Integrals.jl-facing behavior: construction, representative integrals of each
 # kind (singular, radial, smooth, logarithmic, polynomial), rule keys and stats.
 
 @testset "Smoke: algorithm construction" begin

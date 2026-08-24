@@ -14,8 +14,13 @@
 # or, from a REPL, `include("examples/basic_usage.jl")`.
 
 import Pkg                                                          #jl
-Pkg.activate(joinpath(@__DIR__, ".."); io = devnull)                 #jl
+Pkg.activate(joinpath(@__DIR__, "..", "docs"); io = devnull)         #jl
 Pkg.instantiate(; io = devnull)                                      #jl
+## `docs`, not the package environment: section 8 uses ForwardDiff, which is a  #jl
+## test-only extra of this package and cannot be loaded from `Project.toml`.    #jl
+## `docs/Project.toml` declares it, and is also where Literate executes the     #jl
+## notebook version of this very file — so running standalone and running       #jl
+## inside the build are the same statement.                                     #jl
 
 using Integrals
 using DECUHR

@@ -3,8 +3,12 @@ DECUHR = "d5c0ea0e-a2e6-4e56-a5f3-17f3ec7c9d22"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 Integrals = "de52edbc-65ea-441a-8357-d3a637375a31"
+Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 
 [compat]
 Documenter = "1"
 ForwardDiff = "0.10, 1"
+
+[sources]
+DECUHR = {path = ".."}

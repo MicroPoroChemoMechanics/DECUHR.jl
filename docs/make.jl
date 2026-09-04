@@ -43,7 +43,9 @@ makedocs(
         "License"       => "license.md",
     ],
     checkdocs = :exports,
-    warnonly  = true,
+    # No blanket `warnonly`: with `checkdocs = :exports` the missing-docs check
+    # is already narrow, and every exported name is on a page. Leaving the
+    # exemption in place would only hide the next cross-reference that breaks.
 )
 
 deploydocs(;

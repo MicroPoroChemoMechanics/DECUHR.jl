@@ -8,14 +8,21 @@ Integrals = "de52edbc-65ea-441a-8357-d3a637375a31"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 
 [compat]
+Aqua = "0.8"
+ForwardDiff = "1"
 Integrals = "5.4"
 SciMLBase = "2, 3"
+# A standard library, versioned with Julia; the bound constrains nothing that
+# `julia` below does not already. Declared because Aqua asks for it.
+Test = "1"
 julia = "1.9"
 
 [extras]
+Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
-Integrals = "de52edbc-65ea-441a-8357-d3a637375a31"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["ForwardDiff", "Integrals", "Test"]
+# `Integrals` is a main dependency and so is already on the test load path;
+# listing it here as well said nothing extra.
+test = ["Aqua", "ForwardDiff", "Test"]

@@ -7,8 +7,21 @@ Literate = "98b081ad-f1c9-55d3-8b20-4c87d4299306"
 SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 
 [compat]
+# The package itself is built from `..`, so this bound is never used to pick a
+# version — it exists only so CompatHelper stops opening a pull request asking
+# for one.  It is deliberately open across the whole 0.x series: pinning the
+# current minor (`"0.2"`) would make this environment fail to resolve the day
+# the package is bumped to 0.3, with "empty intersection between DECUHR@0.3.0
+# and project compatibility 0.2".  Widen to `"0, 1"` when 1.0 is released.
+DECUHR = "0"
 Documenter = "1"
-ForwardDiff = "0.10, 1"
+# Kept in step with the root Project.toml, which dropped 0.10 when it moved to
+# ForwardDiff 1.
+ForwardDiff = "1"
+Integrals = "5.4"
+Literate = "2"
+SciMLBase = "2, 3"
+julia = "1.9"
 
 [sources]
 DECUHR = {path = ".."}

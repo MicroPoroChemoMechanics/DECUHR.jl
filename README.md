@@ -14,6 +14,7 @@
 [![code style: runic](https://img.shields.io/badge/code_style-%E1%9A%B1%E1%9A%A2%E1%9A%BE%E1%9B%81%E1%9A%B2-pink)](https://github.com/fredrikekre/Runic.jl)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/LICENSE)
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22878393-blue)](https://doi.org/10.5281/zenodo.22878393)
 
 `DECUHR.jl` is a pure-Julia port of the DECUHR algorithm (Espelid &
 Genz, 1994) for automatic adaptive integration of functions with
@@ -109,6 +110,8 @@ made for this port.
 
 ## Citation
 
+[![DOI](https://img.shields.io/badge/DOI-10.5281%2Fzenodo.22878393-blue)](https://doi.org/10.5281/zenodo.22878393)
+
 See [CITATION.cff](CITATION.cff) for citation details.
 
 **BibTeX entry:**
@@ -117,7 +120,8 @@ See [CITATION.cff](CITATION.cff) for citation details.
 @software{decuhr_jl,
   author = {Barthélémy, Jean-François},
   title  = {DECUHR.jl: Adaptive cubature for vertex singularities},
-  url    = {https://github.com/MicroPoroChemoMechanics/DECUHR.jl},
+  doi    = {10.5281/zenodo.22878393},
+  url    = {https://doi.org/10.5281/zenodo.22878393},
   year   = {2026}
 }
 ```

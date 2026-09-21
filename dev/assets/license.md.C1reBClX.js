@@ -1,0 +1,39 @@
+import{_ as s,o as a,c as e,ao as i}from"./chunks/framework.W2cfYcnW.js";const h=JSON.parse('{"title":"License","description":"","frontmatter":{},"headers":[],"relativePath":"license.md","filePath":"license.md","lastUpdated":null}'),t={name:"license.md"};function p(o,n,r,l,c,d){return a(),e("div",null,[...n[0]||(n[0]=[i(`<h1 id="License" tabindex="-1">License <a class="header-anchor" href="#License" aria-label="Permalink to &quot;License {#License}&quot;">​</a></h1><p>The Julia port — <code>DECUHR.jl</code>, i.e. this package, its test suite and its documentation — is released under the <strong>MIT License</strong>, reproduced in the repository file <a href="https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/LICENSE" target="_blank" rel="noreferrer"><code>LICENSE</code></a>.</p><div class="language- vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang"></span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>MIT License</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Copyright (c) 2026 Jean-François Barthélémy</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>Permission is hereby granted, free of charge, to any person obtaining a</span></span>
+<span class="line"><span>copy of this software and associated documentation files (the</span></span>
+<span class="line"><span>&quot;Software&quot;), to deal in the Software without restriction, including</span></span>
+<span class="line"><span>without limitation the rights to use, copy, modify, merge, publish,</span></span>
+<span class="line"><span>distribute, sublicense, and/or sell copies of the Software, and to</span></span>
+<span class="line"><span>permit persons to whom the Software is furnished to do so, subject to</span></span>
+<span class="line"><span>the following conditions:</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>The above copyright notice and this permission notice shall be included</span></span>
+<span class="line"><span>in all copies or substantial portions of the Software.</span></span>
+<span class="line"><span></span></span>
+<span class="line"><span>THE SOFTWARE IS PROVIDED &quot;AS IS&quot;, WITHOUT WARRANTY OF ANY KIND, EXPRESS</span></span>
+<span class="line"><span>OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF</span></span>
+<span class="line"><span>MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</span></span>
+<span class="line"><span>IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY</span></span>
+<span class="line"><span>CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,</span></span>
+<span class="line"><span>TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE</span></span>
+<span class="line"><span>SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</span></span></code></pre></div><h2 id="Upstream-/-third-party-notice" tabindex="-1">Upstream / third-party notice <a class="header-anchor" href="#Upstream-/-third-party-notice" aria-label="Permalink to &quot;Upstream / third-party notice {#Upstream-/-third-party-notice}&quot;">​</a></h2><p><code>DECUHR.jl</code> is a Julia translation and modification of the Fortran 77 DECUHR routines published by</p><blockquote><p>T. O. Espelid and A. Genz, <em>DECUHR: An Algorithm for Automatic Integration of Singular Functions over a Hyperrectangular Region</em>, Numerical Algorithms <strong>8</strong> (1994), 201–220.</p></blockquote><p>The upstream Fortran distribution carries its own copyright notice, reproduced below verbatim and also stored in the repository file <a href="https://github.com/MicroPoroChemoMechanics/DECUHR.jl/blob/main/NOTICE" target="_blank" rel="noreferrer"><code>NOTICE</code></a>. That notice requires that it be included in all copies of any software which is or includes a copy or modification of the upstream software, and in all copies of the supporting documentation.</p><p>Accordingly, <strong>every copy and every derivative work of <code>DECUHR.jl</code> MUST retain both <code>LICENSE</code> and <code>NOTICE</code> unmodified, and documentation builds based on this source tree MUST continue to render the present page</strong>.</p><div class="language-text vp-adaptive-theme"><button title="Copy Code" class="copy"></button><span class="lang">text</span><pre class="shiki shiki-themes github-light github-dark vp-code" tabindex="0"><code><span class="line"><span>***************************************************************************</span></span>
+<span class="line"><span>* All the software  contained in this library  is protected by copyright. *</span></span>
+<span class="line"><span>* Permission  to use, copy, modify, and  distribute this software for any *</span></span>
+<span class="line"><span>* purpose without fee is hereby granted, provided that this entire notice *</span></span>
+<span class="line"><span>* is included  in all copies  of any software which is or includes a copy *</span></span>
+<span class="line"><span>* or modification  of this software  and in all copies  of the supporting *</span></span>
+<span class="line"><span>* documentation for such software.                                        *</span></span>
+<span class="line"><span>***************************************************************************</span></span>
+<span class="line"><span>* THIS SOFTWARE IS BEING PROVIDED &quot;AS IS&quot;, WITHOUT ANY EXPRESS OR IMPLIED *</span></span>
+<span class="line"><span>* WARRANTY. IN NO EVENT, NEITHER  THE AUTHORS, NOR THE PUBLISHER, NOR ANY *</span></span>
+<span class="line"><span>* MEMBER  OF THE EDITORIAL BOARD OF  THE JOURNAL  &quot;NUMERICAL ALGORITHMS&quot;, *</span></span>
+<span class="line"><span>* NOR ITS EDITOR-IN-CHIEF, BE  LIABLE FOR ANY ERROR  IN THE SOFTWARE, ANY *</span></span>
+<span class="line"><span>* MISUSE  OF IT  OR ANY DAMAGE ARISING OUT OF ITS USE. THE ENTIRE RISK OF *</span></span>
+<span class="line"><span>* USING THE SOFTWARE LIES WITH THE PARTY DOING SO.                        *</span></span>
+<span class="line"><span>***************************************************************************</span></span>
+<span class="line"><span>* ANY USE  OF THE SOFTWARE  CONSTITUTES  ACCEPTANCE  OF THE TERMS  OF THE *</span></span>
+<span class="line"><span>* ABOVE STATEMENT.                                                        *</span></span>
+<span class="line"><span>***************************************************************************</span></span></code></pre></div><h2 id="Companion-reference" tabindex="-1">Companion reference <a class="header-anchor" href="#Companion-reference" aria-label="Permalink to &quot;Companion reference {#Companion-reference}&quot;">​</a></h2><ul><li>T. O. Espelid, <em>On Integrating Vertex Singularities using Extrapolation</em>, BIT <strong>34</strong> (1994), 62–79.</li></ul>`,11)])])}const T=s(t,[["render",p]]);export{h as __pageData,T as default};

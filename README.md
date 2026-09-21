@@ -83,8 +83,10 @@ HTML output is placed in `docs/build/`.
 - T.O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic
   Integration of Singular Functions over a Hyperrectangular Region*,
   Numerical Algorithms **8** (1994) 201–220.
+  <https://doi.org/10.1007/BF02142691>
 - T.O. Espelid, *On integrating Vertex Singularities using
   Extrapolation*, BIT **34** (1994) 62–79.
+  <https://doi.org/10.1007/BF01935016>
 
 ## License
 

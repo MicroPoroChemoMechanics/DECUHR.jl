@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="./docs/src/assets/logo.svg" alt="DECUHR.jl" width="100"/>
+</p>
+
 # DECUHR
 
 [![Docs - Stable](https://img.shields.io/badge/docs-stable-blue.svg)](https://MicroPoroChemoMechanics.github.io/DECUHR.jl/stable/)
@@ -79,8 +83,10 @@ HTML output is placed in `docs/build/`.
 - T.O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic
   Integration of Singular Functions over a Hyperrectangular Region*,
   Numerical Algorithms **8** (1994) 201–220.
+  <https://doi.org/10.1007/BF02142691>
 - T.O. Espelid, *On integrating Vertex Singularities using
   Extrapolation*, BIT **34** (1994) 62–79.
+  <https://doi.org/10.1007/BF01935016>
 
 ## License
 
@@ -95,6 +101,11 @@ distribution carries its own copyright notice, which **must be preserved in
 every copy and every derivative work** of this package. That notice is
 reproduced verbatim in [NOTICE](NOTICE); redistributors MUST ship both
 [LICENSE](LICENSE) and [NOTICE](NOTICE) unmodified.
+
+`DECUHR.jl` is an **independent** port: it is not affiliated with, endorsed by, or
+supported by the authors of the original DECUHR routines. Please report problems
+with this package here rather than to them. The package logo is an original work
+made for this port.
 
 ## Citation
 

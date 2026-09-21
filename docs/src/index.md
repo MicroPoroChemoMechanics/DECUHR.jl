@@ -56,3 +56,8 @@ of the original Fortran 77 DECUHR routines, the upstream copyright notice of
 Espelid & Genz **must be preserved in every copy and every derivative work**.
 See the [License](license.md) page for the full text of both the MIT License
 and the upstream notice.
+
+DECUHR.jl is an **independent** port: it is not affiliated with, endorsed by, or
+supported by the authors of the original DECUHR routines. Please report problems
+with this package here rather than to them. The package logo is an original work
+made for this port.

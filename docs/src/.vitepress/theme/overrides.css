@@ -1,0 +1,115 @@
+/* DECUHR.jl — house style on top of the DocumenterVitepress theme.
+ *
+ * Ported from `docs/src/assets/custom.css`, the Documenter stylesheet this site
+ * used before the VitePress migration. Three structural differences to keep in
+ * mind when editing:
+ *   - the content wrapper is `.vp-doc` / `.content-container`, not `.content`;
+ *   - dark mode is a `.dark` class on the root, not a `prefers-color-scheme`
+ *     media query, so the toggle in the navbar works in both directions;
+ *   - `pre.documenter-example-output` is gone: the template's `docstrings.css`
+ *     already styles example output.
+ */
+
+/* The accent, defined once. VitePress derives links, focus rings and custom
+ * blocks from the brand variables, so setting them here keeps the whole theme
+ * on the same blue rather than leaving the default green next to our headings. */
+:root {
+  --decuhr-accent: #4a90d9;
+  --decuhr-accent-strong: #2a6496;
+  --decuhr-accent-wash: rgba(74, 144, 217, 0.08);
+  --decuhr-accent-zebra: rgba(74, 144, 217, 0.06);
+  --decuhr-table-head: #4a90d9;
+
+  --vp-c-brand-1: #2a6496;
+  --vp-c-brand-2: #4a90d9;
+  --vp-c-brand-3: #4a90d9;
+  --vp-c-brand-soft: rgba(74, 144, 217, 0.14);
+}
+
+.dark {
+  --decuhr-accent: #5ba4e8;
+  --decuhr-accent-strong: #7ec8e3;
+  --decuhr-accent-wash: rgba(91, 164, 232, 0.12);
+  --decuhr-accent-zebra: rgba(91, 164, 232, 0.08);
+  --decuhr-table-head: #2a5a8a;
+
+  --vp-c-brand-1: #7ec8e3;
+  --vp-c-brand-2: #5ba4e8;
+  --vp-c-brand-3: #5ba4e8;
+  --vp-c-brand-soft: rgba(91, 164, 232, 0.16);
+}
+
+/* A measure of about 860 px, as before. VitePress defaults to 688 px. */
+.VPDoc .content-container {
+  max-width: 860px;
+}
+
+.vp-doc p,
+.vp-doc li {
+  line-height: 1.7;
+}
+
+/* VitePress rules an <h2> off with a neutral grey line; ours is the accent. */
+.vp-doc h2 {
+  margin-top: 2.5rem;
+  padding-bottom: 0.3rem;
+  border-top: none;
+  border-bottom: 2px solid var(--decuhr-accent);
+}
+
+.vp-doc h3 {
+  margin-top: 1.8rem;
+  color: var(--decuhr-accent-strong);
+}
+
+.vp-doc :not(pre) > code {
+  background-color: var(--decuhr-accent-wash);
+  border-radius: 3px;
+  padding: 0.1em 0.35em;
+  font-size: 0.92em;
+}
+
+/* Tables size to their content instead of stretching to the column. */
+.vp-doc table {
+  display: table;
+  width: auto;
+  max-width: 100%;
+  border-collapse: collapse;
+  font-size: 0.93rem;
+  margin: 1rem 0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.vp-doc table thead tr {
+  background-color: var(--decuhr-table-head);
+  color: #fff;
+}
+
+.vp-doc table thead th {
+  padding: 0.5rem 0.9rem;
+  text-align: left;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: transparent;
+}
+
+.vp-doc table tbody tr {
+  background-color: transparent;
+}
+
+.vp-doc table tbody tr:nth-child(even) {
+  background-color: var(--decuhr-accent-zebra);
+}
+
+.vp-doc table tbody td {
+  padding: 0.4rem 0.9rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* A wide table scrolls inside its own box rather than pushing the page sideways. */
+.vp-doc div[class*='table'],
+.vp-doc .table-wrapper {
+  overflow-x: auto;
+}

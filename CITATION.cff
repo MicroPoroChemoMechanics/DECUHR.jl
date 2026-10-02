@@ -6,7 +6,7 @@ authors:
     orcid: "0000-0002-1968-8939"
     affiliation: "Cerema, UMR MCD"
 title: "DECUHR.jl: Adaptive cubature for vertex singularities"
-abstract: "Pure-Julia port of the DECUHR algorithm (Espelid & Genz, 1994) for automatic adaptive integration of functions with vertex singularities over hyper-rectangular regions, exposed as a pluggable algorithm for the SciML Integrals.jl solver stack. Supports 2D and 3D integration, user-supplied or auto-estimated singular strength, logarithmic singularities, and vector-valued integrands."
+abstract: "Pure-Julia port of the DECUHR algorithm (Espelid & Genz, 1994) for automatic adaptive integration of functions with vertex singularities over hyper-rectangular regions, exposed as a pluggable algorithm for the SciML Integrals.jl solver stack. Supports integration in 2 to 15 dimensions, user-supplied or auto-estimated singular strength, logarithmic singularities, and vector-valued integrands."
 keywords:
   - "Julia"
   - "numerical integration"

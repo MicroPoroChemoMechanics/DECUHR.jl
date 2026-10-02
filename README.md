@@ -25,12 +25,16 @@ via the `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 ## Features
 
-- 2-D and 3-D integration on hyper-rectangles.
+- Integration on hyper-rectangles of dimension 2 to 15: dedicated degree-13
+  (2-D) and degree-11 (3-D) rules, degree-9 and degree-7 rules in any
+  dimension.
 - Vertex singularity handling with user-supplied or auto-estimated
   exponent ``\alpha`` (singular strength).
 - Logarithmic singularities (`logf = k` for ``(\log)^k`` weights).
 - Vector-valued integrands (any `NUMFUN`).
 - Richardson extrapolation on sub-region averages.
+- Differentiable with ForwardDiff with respect to integrand parameters,
+  including when ``\alpha`` is auto-estimated.
 - Reports a `retcode` compatible with Integrals.jl (`Success`,
   `MaxIters`, …).
 

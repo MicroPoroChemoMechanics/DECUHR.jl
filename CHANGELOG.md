@@ -1,5 +1,28 @@
 # Changelog
 
+## Unreleased
+
+### Documentation
+
+- The README and `CITATION.cff` said "2-D and 3-D integration". The driver
+  accepts 2 to 15 dimensions, with the degree-9 and degree-7 rules beyond the
+  dedicated 2-D and 3-D ones, and the test suite exercises them in 4-D. The
+  README now says so, and lists differentiability through ForwardDiff, which
+  only the manual mentioned.
+
+## v0.2.1 — 2026-08-10
+
+No change to the algorithm or the API; this entry was missing and is written
+from the history of the release.
+
+- Source comments, docstrings and documentation in US English, held there by a
+  spelling check in CI.
+- Installation through `Pkg.add("DECUHR")` from the General registry in the
+  manual; references to `MeanFieldHom.jl` renamed `MeanFieldHomogenization.jl`.
+- Continuous integration moved to GitHub Actions (tests, documentation,
+  formatting, spelling, CompatHelper), the obsolete Forgejo workflows and
+  `docs/deploy_docs.jl` removed.
+
 ## v0.2.0 — 2026-07-03
 
 ### Changed

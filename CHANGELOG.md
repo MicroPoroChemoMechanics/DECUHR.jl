@@ -1,6 +1,14 @@
 # Changelog
 
-## Unreleased
+## v0.3.0 — 2026-10-11
+
+An audit of the package against the rules of its family — Julia written for
+speed, generic number types, a documentation that says what the code does —
+with a lock on the canonical results at every step. The default `alpha` was
+not estimated for `singul ≥ 3` and gave a result off by a hundred times the
+tolerance while reporting convergence; integer-valued integrands and dual
+domain bounds failed; the adaptive loop allocated at every evaluation of the
+rule. The six canonical results keep their bits.
 
 ### Breaking changes
 

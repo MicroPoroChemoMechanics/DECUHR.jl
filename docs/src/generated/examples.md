@@ -95,7 +95,7 @@ I = \int_0^1\!\int_0^1\!\int_0^1 (x_1 x_2 x_3)^{-1/3}\, dx
   = \left(\frac{3}{2}\right)^3 = \frac{27}{8}
 ```
 
-The 3-D vertex singularity is challenging; `wrksub=50000` (now the default)
+The 3-D vertex singularity is challenging; `wrksub=50000`, the default,
 allows sufficient refinement:
 
 ````@example examples

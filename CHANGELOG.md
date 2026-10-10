@@ -16,6 +16,18 @@
   the estimate does not read the value it starts from, so those results are
   unchanged to the bit.
 
+### Fixed
+
+- **An integrand with integer values raised `InexactError`.** The values were
+  stored in the type of the probe evaluation, so a constant integrand `1`, or
+  a vector of integers, filled integer arrays that the Float64-weighted sums of
+  the rule could not be written into. They are held in the floating-point type
+  of that type (`float`), which leaves Float32, Float64 and dual values as
+  they were.
+- The docstring says what `sol.stats.numevals` counts: the evaluations of the
+  cubature, the Fortran `NEVAL`, not the estimate of `alpha` nor the probe of
+  an out-of-place integrand.
+
 ### Performance
 
 - **No allocation per evaluation of the rule.** The integrand was passed on

@@ -133,3 +133,16 @@ end
     )
     @test (@inferred DECUHR._eval_rule!(args...)) isa Tuple{Int, Float32}
 end
+
+@testset "Integer-valued integrands" begin
+    # The values are summed with Float64 weights, so they are held as floats: an
+    # integer-valued integrand raised InexactError when its values were stored
+    # in the integer type of the probe evaluation.
+    sol = solve(IntegralProblem((u, _) -> 1, (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test sol.u isa Float64 && sol.u ≈ 1
+    solv = solve(IntegralProblem((u, _) -> [1, 2], (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test solv.u ≈ [1, 2]
+    ip = IntegralFunction((y, u, _) -> (y[1] = 3; nothing), zeros(Int, 1))
+    soli = solve(IntegralProblem(ip, (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test soli.u ≈ 3
+end

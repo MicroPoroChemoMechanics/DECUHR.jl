@@ -126,7 +126,7 @@ inspect `sol.resid`.
 
 | Field                | Meaning |
 |:---------------------|:--------|
-| `sol.stats.numevals` | Number of integrand evaluations performed |
+| `sol.stats.numevals` | Number of integrand evaluations of the cubature, the Fortran `NEVAL` (the estimate of `alpha` and the probe of an out-of-place integrand evaluate it besides) |
 | `sol.stats.ifail`    | Raw DECUHR `IFAIL` code (0 = success, 1 = budget hit, …) |
 | `sol.stats.message`  | Human-readable description of the `IFAIL` code |
 
@@ -349,17 +349,19 @@ function Integrals.__solvebp_call(
 
     # Detect numfun and the value type TV.  In-place integrands declare both via
     # their prototype (no probe evaluation); out-of-place integrands are probed
-    # once at the midpoint.  TV may be a dual-number type when differentiating
-    # w.r.t. parameters p.
+    # once at the midpoint, an evaluation that `numevals` does not count (it
+    # counts those of the cubature, as the Fortran NEVAL does).  TV is the
+    # floating-point type of the values — a weighted sum of integers is not an
+    # integer — and may be a dual-number type when differentiating w.r.t. p.
     if iip
         proto = f.integrand_prototype
         numfun = length(proto)
-        TV = eltype(proto)
+        TV = float(eltype(proto))
     else
         xmid = (lb .+ ub) ./ 2
         test_out = f(xmid, p)
         numfun = test_out isa Number ? 1 : length(test_out)
-        TV = test_out isa Number ? typeof(test_out) : eltype(test_out)
+        TV = float(test_out isa Number ? typeof(test_out) : eltype(test_out))
     end
 
     # Wrap SciML f → DECUHR funsub(x, funvls) through the function barrier.

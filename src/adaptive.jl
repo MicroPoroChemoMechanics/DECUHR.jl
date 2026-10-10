@@ -232,12 +232,12 @@ end
 function _adaptive_integrate!(
         ndim::Int, numfun::Int,
         a::AbstractVector, b::AbstractVector,
-        maxsub::Int, funsub, ::Type{TV},
+        maxsub::Int, funsub::F, ::Type{TV},
         singul::Int, alpha::Float64, logf::Int,
         epsabs::Float64, epsrel::Float64,
         keyf::Int, num::Int, wtleng::Int,
         emax::Int, minpts::Int, maxpts::Int
-    ) where {TV}
+    ) where {F, TV}
 
     # ------------------------------------------------------------------
     # Initialize integration rule (DEINHR)
@@ -262,7 +262,7 @@ function _adaptive_integrate!(
     centrs = zeros(Float64, ndim, sz)   # CENTRS(NDIM,   0:MAXSUB)
     hwidts = zeros(Float64, ndim, sz)   # HWIDTS(NDIM,   0:MAXSUB)
     greate = zeros(TV, sz)           # GREATE(0:MAXSUB) — max error per region
-    dir = zeros(Float64, sz)           # DIR(0:MAXSUB)    — direction index
+    dir = zeros(Int, sz)             # DIR(0:MAXSUB)    — axis, or −(singular directions)
 
     # Extrapolation data — value arrays on TV; coefficient arrays stay Float64
     q = zeros(TV, numfun, sz)        # Q(NUMFUN, 0:MAXSUB)
@@ -300,19 +300,23 @@ function _adaptive_integrate!(
         hwidts[j, 1] = abs(b[j] - a[j]) / 2.0
         order[j] = j
     end
-    dir[1] = Float64(-singul)   # DIR(0) = -SINGUL
+    dir[1] = -singul   # DIR(0) = -SINGUL
 
-    # Evaluate rule over the initial whole region
-    let dref = Ref(dir[1]), gref = Ref{TV}(zero(TV))
-        _eval_rule!(
-            ndim, view(centrs, :, 1), view(hwidts, :, 1),
+    # The rule over subregion `k` (DERLHR), its value and error into column `k`
+    # of `values` and `errors`, its direction and greatest error into `dir` and
+    # `greate`.
+    function eval_region!(k)
+        dir[k], greate[k] = _eval_rule!(
+            ndim, view(centrs, :, k), view(hwidts, :, k),
             wtleng, g, w, errcof, numfun, funsub, scales, norms,
             x_work, null_work, fs_g, fs_x,
-            view(values, :, 1), view(errors, :, 1), dref, gref, diff, order
+            view(values, :, k), view(errors, :, k), dir[k], diff, order
         )
-        dir[1] = dref[]
-        greate[1] = gref[]
+        return nothing
     end
+
+    # Evaluate rule over the initial whole region
+    eval_region!(1)
 
     for j in 1:numfun
         result[j] = values[j, 1]
@@ -340,7 +344,7 @@ function _adaptive_integrate!(
         # Singular region (index 1) if its error > heap top
         vacant = greate[top] < greate[1] ? 1 : top
 
-        direct_i = round(Int, dir[vacant])     # integer direction value
+        direct_i = dir[vacant]
         ndiv = max(2, -direct_i + 1)       # SINGUL+1 or 2
 
         # Budget check
@@ -381,12 +385,12 @@ function _adaptive_integrate!(
                     hwidts[j, pointr + i - 1] = hwidts[j, vacant]
                     centrs[j, pointr + i - 1] = centrs[j, vacant]
                 end
-                dir[pointr + i - 1] = Float64(nxt)
+                dir[pointr + i - 1] = nxt
                 centrs[nxt, pointr + i - 1] = centrs[nxt, vacant] + hwidts[nxt, vacant]
                 centrs[nxt, vacant] -= hwidts[nxt, vacant]
             end
         end
-        dir[vacant] = Float64(direct_i)   # DIR(VACANT) = DIRECT (always)
+        dir[vacant] = direct_i   # DIR(VACANT) = DIRECT (always)
 
         # ------------------------------------------------------------------
         # Determine UPDATE index
@@ -411,17 +415,7 @@ function _adaptive_integrate!(
             end
         end
 
-        let dref = Ref(dir[vacant]), gref = Ref{TV}(zero(TV))
-            _eval_rule!(
-                ndim, view(centrs, :, vacant), view(hwidts, :, vacant),
-                wtleng, g, w, errcof, numfun, funsub, scales, norms,
-                x_work, null_work, fs_g, fs_x,
-                view(values, :, vacant), view(errors, :, vacant),
-                dref, gref, diff, order
-            )
-            dir[vacant] = dref[]
-            greate[vacant] = gref[]
-        end
+        eval_region!(vacant)
 
         if vacant == 1
             # Q(J, NUMU) = VALUES(J, 0)  →  q[j, numu+1] = values[j, 1]
@@ -441,17 +435,7 @@ function _adaptive_integrate!(
         # ------------------------------------------------------------------
         for i in 2:ndiv
             idx2 = pointr + i - 2
-            let dref = Ref(dir[idx2]), gref = Ref{TV}(zero(TV))
-                _eval_rule!(
-                    ndim, view(centrs, :, idx2), view(hwidts, :, idx2),
-                    wtleng, g, w, errcof, numfun, funsub, scales, norms,
-                    x_work, null_work, fs_g, fs_x,
-                    view(values, :, idx2), view(errors, :, idx2),
-                    dref, gref, diff, order
-                )
-                dir[idx2] = dref[]
-                greate[idx2] = gref[]
-            end
+            eval_region!(idx2)
             upoint[idx2] = update
             for j in 1:numfun
                 uerr_s[j] += errors[j, idx2]

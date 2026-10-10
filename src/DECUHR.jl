@@ -193,11 +193,11 @@ function _decuhr_driver(
         ndim::Int, numfun::Int,
         a::AbstractVector, b::AbstractVector,
         minpts::Int, maxpts::Int,
-        funsub, ::Type{TV},
+        funsub::F, ::Type{TV},
         singul::Int, alpha_in::Float64, logf_in::Int,
         epsabs::Real, epsrel::Real,
         key::Int, wrksub::Int, emax::Int
-    ) where {TV}
+    ) where {F, TV}
 
     # --- Parameter validation ---
     num, maxsub, keyf, wtleng, ifail = _check_params(

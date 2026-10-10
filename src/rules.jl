@@ -532,20 +532,18 @@ end
 # ============================================================
 # DERLHR — evaluate integration rule over one sub-region, estimate error.
 #
-# Conventions (matching Fortran):
-#   direct_ref[] ≥ 0 → regular region, subdivision axis is written back
-#   direct_ref[] < 0 → singular region, ORDER is sorted by DIFF magnitude
-#   greate_ref[] ← max error over NUMFUN components
-#   null_work     :: Matrix{Float64}(numfun, 8) — work storage
+# Conventions (matching Fortran), `direct` being the region's direction:
+#   direct ≥ 0 → regular region, the subdivision axis is returned in its place
+#   direct < 0 → singular region, ORDER is sorted by DIFF magnitude
+# Returns `(direction, greate)`, `greate` the largest error over the NUMFUN
+# components. `null_work` (numfun × 8) is work storage in the value type.
 # ============================================================
 function _eval_rule!(
         ndim, center, hwidth, wtleng, g, w, errcof,
         numfun, funsub, scales, norms, x, null_work,
         fs_g, fs_x,
-        basval, rgnerr, direct_ref, greate_ref, diff, order
+        basval, rgnerr, direct::Int, diff, order
     )
-
-    direct = direct_ref[]
 
     # All loops below index with 1:ndim / 1:numfun / 1:wtleng into buffers the
     # caller allocated at exactly those sizes; @inbounds does not reach into
@@ -610,9 +608,7 @@ function _eval_rule!(
         end
         diff[i] = difsum
     end
-    if direct >= 0
-        direct_ref[] = Float64(divaxn)
-    end
+    new_direct = direct >= 0 ? divaxn : direct
 
     # Remaining generators (positions 4..wtleng) via fully symmetric sums
     fulsms = view(null_work, :, 5)    # reuse as output buffer
@@ -654,12 +650,10 @@ function _eval_rule!(
         basval[j] *= rgnvol
         greate = max(greate, rgnerr[j])
     end
-    greate_ref[] = greate
 
     # Sort ORDER[1..|direct|] by DIFF in descending order (for singular-region planning)
     if direct < 0
-        neg_direct = -round(Int, direct)
-        @inbounds for i in 2:neg_direct
+        @inbounds for i in 2:(-direct)
             cur = order[i]
             new_val = diff[cur]
             j = i - 1
@@ -670,5 +664,5 @@ function _eval_rule!(
             order[j + 1] = cur
         end
     end
-    return nothing
+    return new_direct, greate
 end

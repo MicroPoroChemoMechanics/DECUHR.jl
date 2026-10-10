@@ -2,6 +2,31 @@
 
 ## Unreleased
 
+### Breaking changes
+
+- **The default `alpha` is estimated whatever `singul`.** The default was
+  `-2.0`, and the exponent is estimated only when `alpha ≤ -singul`; for
+  `singul ≥ 3` the default was therefore taken as the exponent of the
+  singularity, while the docstring and the manual said it was estimated. On
+  `|x|^(-3/2)` at the corner of the unit cube (`singul = 3`, exponent `-3/2`)
+  the result came back 1.03e-4 off, reported as converged, after 8001
+  evaluations, for a requested relative tolerance of 1e-6; estimated, the
+  exponent gives 7.7e-7 in 1651 evaluations, as the exact one does. The default
+  is now `-Inf`. For `singul ≤ 2` the old default was already estimated and
+  the estimate does not read the value it starts from, so those results are
+  unchanged to the bit.
+
+### Performance
+
+- **No allocation per evaluation of the rule.** The integrand was passed on
+  by the driver and the adaptive loop without either being specialized on it,
+  so each evaluation of the rule was a dynamic call with its views and two
+  `Ref`s allocated on the heap. A `solve` now allocates about 180 to 190 times
+  whatever its number of evaluations, where the canonical cases C1 and C4
+  allocated 10,342 and 47,417 times; the canonical results are unchanged to
+  the bit. The accumulators of the rule are in the type their sums take, so
+  that Float32 values no longer make them type-unstable.
+
 ### Documentation
 
 - The README and `CITATION.cff` said "2-D and 3-D integration". The driver

@@ -72,7 +72,7 @@ export DecuhrAlgorithm
 # Algorithm struct
 # ============================================================
 """
-    DecuhrAlgorithm(; key=0, singul=1, alpha=-2.0, logf=0,
+    DecuhrAlgorithm(; key=0, singul=1, alpha=-Inf, logf=0,
                       wrksub=50000, emax=20, minpts=0)
 
 DECUHR adaptive integration algorithm for functions with vertex singularities.
@@ -83,7 +83,7 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 |:---------|:--------|:------------|
 | `key`    | `0`     | Rule selector: 0=auto, 1=2D deg-13 (65 pts), 2=3D deg-11 (127 pts), 3=deg-9 (nD), 4=deg-7 (nD) |
 | `singul` | `1`     | Dimension of the singularity: the vertex `(a[1],…,a[singul])` is singular |
-| `alpha`  | `-2.0`  | Exponent of the homogeneous singularity. Auto-estimated when `alpha ≤ -singul` |
+| `alpha`  | `-Inf`  | Exponent of the homogeneous singularity. Auto-estimated when `alpha ≤ -singul`, which the default always is |
 | `logf`   | `0`     | `1` if a logarithmic factor is present; `0` otherwise (auto-detected when `alpha ≤ -singul`) |
 | `wrksub` | `50000` | Maximum number of stored subregions |
 | `emax`   | `20`    | Maximum number of Richardson extrapolation steps |
@@ -94,7 +94,8 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 - The singularity must be located at the **lower-left vertex** `a[1:singul]`
   of the integration domain.  Shift the domain if necessary.
 - `alpha` must satisfy `alpha > -singul`.  Setting `alpha ≤ -singul` (the
-  default) triggers automatic estimation via `DECALP`.
+  default, `-Inf`, whatever `singul`) triggers automatic estimation via
+  `DECALP`.
 - For regular (non-singular) integrands set `singul=1` and leave `alpha` at
   its default; the algorithm degrades gracefully to ordinary adaptive Gauss.
 - For vector integrands the in-place SciML form
@@ -149,7 +150,7 @@ end
 function DecuhrAlgorithm(;
         key = 0,
         singul = 1,
-        alpha = -2.0,   # ≤ -singul triggers auto-estimation
+        alpha = -Inf,   # ≤ -singul whatever singul: estimated
         logf = 0,
         wrksub = 50000,
         emax = 20,

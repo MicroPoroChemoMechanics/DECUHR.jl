@@ -570,10 +570,13 @@ function _eval_rule!(
     end
 
     # Fourth differences along each axis (generators at positions 2 and 3)
-    # Accumulators are typed on the value type (duals when differentiating);
-    # for Float64 zero(eltype(diff)) === 0.0, so nothing changes numerically.
+    # Accumulators are in the type of the values promoted with the Float64 rule
+    # constants they are combined with (duals when differentiating), which is
+    # the type their sums take: a Float32 accumulator would turn Float64 at its
+    # first addition.
     ratio = (g[1, 3] / g[1, 2])^2
-    difmax = zero(eltype(diff))
+    Tacc = promote_type(eltype(diff), Float64)
+    difmax = zero(Tacc)
     @inbounds for i in 1:ndim
         x[i] = center[i] - hwidth[i] * g[1, 2]
         funsub(x, view(null_work, :, 5))
@@ -585,7 +588,7 @@ function _eval_rule!(
         funsub(x, view(null_work, :, 8))
         x[i] = center[i]
 
-        difsum = zero(eltype(diff))
+        difsum = zero(Tacc)
         for j in 1:numfun
             frthdf = abs(
                 2.0 * (1.0 - ratio) * rgnerr[j]
@@ -631,7 +634,7 @@ function _eval_rule!(
     greate = zero(eltype(rgnerr))
     @inbounds for j in 1:numfun
         for i in 1:3
-            search = zero(eltype(null_work))
+            search = zero(promote_type(eltype(null_work), Float64))
             for k in 1:wtleng
                 search = max(
                     search,

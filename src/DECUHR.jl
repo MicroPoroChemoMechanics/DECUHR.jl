@@ -99,9 +99,10 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 - For regular (non-singular) integrands set `singul=1` and leave `alpha` at
   its default; the algorithm degrades gracefully to ordinary adaptive Gauss.
 - For vector integrands the in-place SciML form
-  `IntegralFunction((y, u, p) -> (y .= ...), prototype)` is the
-  zero-allocation route: the out-of-place form allocates its returned vector
-  at every integrand evaluation.
+  `IntegralFunction((y, u, p) -> (y .= ...), prototype)` allocates nothing per
+  evaluation, about 200 times for a whole solve whatever its number of
+  evaluations; the out-of-place form allocates its returned vector at every
+  integrand evaluation.
 
 ## Return codes
 

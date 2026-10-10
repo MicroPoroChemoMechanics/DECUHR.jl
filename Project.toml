@@ -10,7 +10,9 @@ SciMLBase = "0bca4576-84f4-4d90-8ffe-ffa030f20462"
 [compat]
 Aqua = "0.8"
 ForwardDiff = "1"
-Integrals = "5.4"
+# The override of `Integrals.__solve` and the `__solvebp_call` hook use internal
+# functions of Integrals.jl, so its bound admits the minor releases tested only.
+Integrals = "~5.4, ~5.5"
 SciMLBase = "2, 3"
 # A standard library, versioned with Julia; the bound constrains nothing that
 # `julia` below does not already. Declared because Aqua asks for it.
@@ -23,6 +25,6 @@ ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-# `Integrals` is a main dependency and so is already on the test load path;
-# listing it here as well said nothing extra.
+# `Integrals` is a main dependency and so already on the test load path, which
+# is why it is not listed here.
 test = ["Aqua", "ForwardDiff", "Test"]

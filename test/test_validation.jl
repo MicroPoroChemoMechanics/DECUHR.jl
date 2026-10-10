@@ -37,8 +37,8 @@
 end
 
 @testset "Scalar domain raises a clear error" begin
-    # DECUHR is 2 ≤ ndim ≤ 15 only; a scalar domain used to die with an obscure
-    # MethodError deep in the driver.
+    # DECUHR is 2 ≤ ndim ≤ 15 only; a scalar domain is refused here, not left to
+    # fail deep in the driver with a MethodError.
     f(u, _) = 1.0
     prob = IntegralProblem(f, (0.0, 1.0))
     @test_throws ArgumentError solve(prob, DecuhrAlgorithm())

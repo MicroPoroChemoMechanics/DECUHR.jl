@@ -22,6 +22,11 @@
   runs it there; 1.9, which nothing tested and which is no longer supported,
   is no longer declared.
 
+- **Integrals.jl bounded to the minor releases tested**, `"~5.4, ~5.5"` where
+  it was `"5.4"`. The override of `Integrals.__solve` and the
+  `__solvebp_call` hook use internal functions of Integrals.jl, which a minor
+  release may change; a new one is admitted once tested.
+
 ### Fixed
 
 - **An integrand with integer values raised `InexactError`.** The values were

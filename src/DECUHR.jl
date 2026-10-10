@@ -197,12 +197,14 @@ function _primal_to_float(x::Real)
 end
 
 """
-    _decuhr_driver(ndim, numfun, a, b, minpts, maxpts, funsub,
+    _decuhr_driver(ndim, numfun, a, b, minpts, maxpts, funsub, ::Type{TV},
                    singul, alpha_in, logf_in, epsabs, epsrel,
                    key, wrksub, emax)
 
 Low-level driver.  Validates parameters, optionally estimates `alpha`, then
-calls `_adaptive_integrate!`.  Returns `(result, abserr, neval, ifail)`.
+calls `_adaptive_integrate!`.  `funsub(x, funvls)` writes the `numfun` values
+at `x` into `funvls`, which holds values of type `TV` (a dual-number type when
+differentiating).  Returns `(result, abserr, neval, ifail)`.
 """
 function _decuhr_driver(
         ndim::Int, numfun::Int,

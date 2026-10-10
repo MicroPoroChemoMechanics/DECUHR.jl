@@ -45,14 +45,18 @@
 
 ### Performance
 
-- **No allocation per evaluation of the rule.** The integrand was passed on
-  by the driver and the adaptive loop without either being specialized on it,
-  so each evaluation of the rule was a dynamic call with its views and two
-  `Ref`s allocated on the heap. A `solve` now allocates about 180 to 190 times
-  whatever its number of evaluations, where the canonical cases C1 and C4
-  allocated 10,342 and 47,417 times; the canonical results are unchanged to
-  the bit. The accumulators of the rule are in the type their sums take, so
-  that Float32 values no longer make them type-unstable.
+- **Fewer allocations per evaluation of the rule.** `_eval_rule!` returned
+  the direction and the greatest error of its region through two `Ref`s,
+  which escaped into its dynamic call and were allocated with its views at
+  every evaluation; it returns them now, and the directions are integers. The
+  canonical cases C1 and C4 allocate 629 and 4,408 times where they allocated
+  10,342 and 47,417 times, with the same bits and the same times; a vector
+  integrand in place allocates 1,687 times over 201,695 evaluations where it
+  allocated 18,813 times. The integrand is deliberately not a type parameter
+  of the adaptive loop: so specialized, it compiled the loop again for every
+  new integrand, 2.3 s against 0.8 s. The accumulators of the rule are in the
+  type their sums take, so that Float32 values no longer make them
+  type-unstable.
 
 ### Documentation
 

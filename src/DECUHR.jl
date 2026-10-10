@@ -100,9 +100,9 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
   its default; the algorithm degrades gracefully to ordinary adaptive Gauss.
 - For vector integrands the in-place SciML form
   `IntegralFunction((y, u, p) -> (y .= ...), prototype)` allocates nothing per
-  evaluation, about 200 times for a whole solve whatever its number of
-  evaluations; the out-of-place form allocates its returned vector at every
-  integrand evaluation.
+  integrand evaluation, only a few times per evaluation of the rule (1,687
+  times for 201,695 evaluations of a two-component integrand); the
+  out-of-place form allocates its returned vector at every evaluation.
 
 ## Return codes
 
@@ -210,11 +210,11 @@ function _decuhr_driver(
         ndim::Int, numfun::Int,
         a::AbstractVector, b::AbstractVector,
         minpts::Int, maxpts::Int,
-        funsub::F, ::Type{TV},
+        funsub, ::Type{TV},
         singul::Int, alpha_in::Float64, logf_in::Int,
         epsabs::Real, epsrel::Real,
         key::Int, wrksub::Int, emax::Int
-    ) where {F, TV}
+    ) where {TV}
 
     # --- Parameter validation ---
     num, maxsub, keyf, wtleng, ifail = _check_params(

@@ -134,9 +134,22 @@ inspect `sol.resid`.
 ## Automatic differentiation
 
 `solve` is differentiable through ForwardDiff with respect to integrand
-parameters, **including** when `alpha` is auto-estimated: the exponent is
-estimated on the primal integrand (it is a structural property of the
-singularity) and the integration is then carried out in the dual number type.
+parameters, nested derivatives included, and **including** when `alpha` is
+auto-estimated: the exponent is estimated on the primal integrand (it is a
+structural property of the singularity) and the integration is then carried
+out in the dual number type. It is not differentiable with respect to the
+bounds of the domain, which are refused with a message: map them in the
+integrand, `x = a + (b - a) .* t` with the Jacobian `prod(b - a)`, so that `a`
+and `b` are parameters.
+
+## Number types
+
+The rule's nodes, weights and error coefficients are `Float64`. Values of
+another floating-point type are carried through (`Float32` stays `Float32`,
+integers become `Float64`), but a `BigFloat` integrand is no more accurate
+than a `Float64` one: a quadratic, which the rule integrates exactly, comes out
+1e-16 off. Symbolic values are not supported: the algorithm is adaptive on
+numerical error estimates.
 """
 struct DecuhrAlgorithm <: SciMLBase.AbstractIntegralAlgorithm
     key::Int
@@ -325,6 +338,22 @@ function _make_funsub(f, p, ::Val{false}, numfun::Int, ::Type{TV}) where {TV}
     end
 end
 
+# The bounds of the domain as the Float64 coordinates the rule is built in. A
+# bound that carries derivatives has no such value: Integrals.jl passes dual
+# bounds on as they are, and the cubature is not differentiated with respect to
+# its own geometry.
+function _domain_bounds(v::AbstractVector)
+    any(x -> hasfield(typeof(x), :partials), v) && throw(
+        ArgumentError(
+            "DECUHR does not differentiate with respect to the bounds of the domain. " *
+                "Integrate over fixed bounds and map them in the integrand, " *
+                "x = a + (b - a) .* t with its Jacobian prod(b - a), so that a and b " *
+                "are parameters `p` of the integrand, which carry derivatives."
+        )
+    )
+    return Float64.(v)
+end
+
 function Integrals.__solvebp_call(
         cache::Integrals.IntegralCache,
         alg::DecuhrAlgorithm,
@@ -344,6 +373,7 @@ function Integrals.__solvebp_call(
             )
         )
     end
+    lb, ub = _domain_bounds(lb), _domain_bounds(ub)
     ndim = length(lb)
     f = cache.f   # IntegralFunction wrapping the user's integrand
     iip = SciMLBase.isinplace(f)

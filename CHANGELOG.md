@@ -30,6 +30,10 @@
   the rule could not be written into. They are held in the floating-point type
   of that type (`float`), which leaves Float32, Float64 and dual values as
   they were.
+- **A domain bound carrying derivatives failed with a `MethodError`** deep in
+  the cubature (Integrals.jl passes dual bounds on as they are). It is refused
+  with a message that gives the way that works: mapping the domain onto fixed
+  bounds in the integrand, whose parameters then carry the derivative.
 - The docstring says what `sol.stats.numevals` counts: the evaluations of the
   cubature, the Fortran `NEVAL`, not the estimate of `alpha` nor the probe of
   an out-of-place integrand.
@@ -47,6 +51,11 @@
 
 ### Documentation
 
+- The docstring of `DecuhrAlgorithm` states the number types: nested
+  derivatives with respect to parameters (now tested against exact
+  identities), not with respect to the bounds; `Float32` carried through,
+  integers made `Float64`, `BigFloat` no more accurate than `Float64` because
+  the rule's constants are `Float64`; symbolic values not supported.
 - The README and `CITATION.cff` said "2-D and 3-D integration". The driver
   accepts 2 to 15 dimensions, with the degree-9 and degree-7 rules beyond the
   dedicated 2-D and 3-D ones, and the test suite exercises them in 4-D. The

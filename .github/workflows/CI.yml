@@ -25,6 +25,8 @@ jobs:
       fail-fast: false
       matrix:
         version:
+          # 'lts' is the lower bound of `julia` in Project.toml, tested.
+          - 'lts'
           - '1.12'
           - '1.13'
           - 'pre'

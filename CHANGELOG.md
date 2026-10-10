@@ -16,6 +16,12 @@
   the estimate does not read the value it starts from, so those results are
   unchanged to the bit.
 
+- **Julia 1.10 at least, and tested there.** The bound was `julia = "1.9"`,
+  and the CI tested from 1.12 only. The suite passes on 1.10 (the long-term
+  support release), the canonical cases with the same bits, and a CI job now
+  runs it there; 1.9, which nothing tested and which is no longer supported,
+  is no longer declared.
+
 ### Fixed
 
 - **An integrand with integer values raised `InexactError`.** The values were

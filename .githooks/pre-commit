@@ -4,11 +4,11 @@
 # Enable once, per clone:
 #     git config core.hooksPath .githooks
 #
-# It **fixes** rather than complains. An earlier version ran the same check as
-# CI and refused the commit, which left the contributor to run the converter
-# and start over — and under time pressure that turns into `--no-verify`, which
-# is exactly the red CI run the hook exists to prevent. Converting and
-# re-staging removes the step instead of adding one.
+# It **fixes** rather than complains. A hook that ran the same check as CI and
+# refused the commit would leave the contributor to run the converter and start
+# over — and under time pressure that turns into `--no-verify`, which is
+# exactly the red CI run the hook exists to prevent. Converting and re-staging
+# removes the step instead of adding one.
 #
 # Only staged, prose-bearing files are touched, and only their prose:
 # `spelling_tool.py` never rewrites Julia identifiers, keyword arguments or

@@ -90,7 +90,7 @@ println("|err| = ", abs.(sol4.u .- exact4))
 #   = \left(\frac{3}{2}\right)^3 = \frac{27}{8}
 # ```
 #
-# The 3-D vertex singularity is challenging; `wrksub=50000` (now the default)
+# The 3-D vertex singularity is challenging; `wrksub=50000`, the default,
 # allows sufficient refinement:
 
 f5 = (u, p) -> (u[1] * u[2] * u[3])^(-1 / 3)

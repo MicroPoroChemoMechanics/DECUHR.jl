@@ -72,7 +72,7 @@ export DecuhrAlgorithm
 # Algorithm struct
 # ============================================================
 """
-    DecuhrAlgorithm(; key=0, singul=1, alpha=-2.0, logf=0,
+    DecuhrAlgorithm(; key=0, singul=1, alpha=-Inf, logf=0,
                       wrksub=50000, emax=20, minpts=0)
 
 DECUHR adaptive integration algorithm for functions with vertex singularities.
@@ -83,7 +83,7 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 |:---------|:--------|:------------|
 | `key`    | `0`     | Rule selector: 0=auto, 1=2D deg-13 (65 pts), 2=3D deg-11 (127 pts), 3=deg-9 (nD), 4=deg-7 (nD) |
 | `singul` | `1`     | Dimension of the singularity: the vertex `(a[1],…,a[singul])` is singular |
-| `alpha`  | `-2.0`  | Exponent of the homogeneous singularity. Auto-estimated when `alpha ≤ -singul` |
+| `alpha`  | `-Inf`  | Exponent of the homogeneous singularity. Auto-estimated when `alpha ≤ -singul`, which the default always is |
 | `logf`   | `0`     | `1` if a logarithmic factor is present; `0` otherwise (auto-detected when `alpha ≤ -singul`) |
 | `wrksub` | `50000` | Maximum number of stored subregions |
 | `emax`   | `20`    | Maximum number of Richardson extrapolation steps |
@@ -94,13 +94,15 @@ DECUHR adaptive integration algorithm for functions with vertex singularities.
 - The singularity must be located at the **lower-left vertex** `a[1:singul]`
   of the integration domain.  Shift the domain if necessary.
 - `alpha` must satisfy `alpha > -singul`.  Setting `alpha ≤ -singul` (the
-  default) triggers automatic estimation via `DECALP`.
+  default, `-Inf`, whatever `singul`) triggers automatic estimation via
+  `DECALP`.
 - For regular (non-singular) integrands set `singul=1` and leave `alpha` at
   its default; the algorithm degrades gracefully to ordinary adaptive Gauss.
 - For vector integrands the in-place SciML form
-  `IntegralFunction((y, u, p) -> (y .= ...), prototype)` is the
-  zero-allocation route: the out-of-place form allocates its returned vector
-  at every integrand evaluation.
+  `IntegralFunction((y, u, p) -> (y .= ...), prototype)` allocates nothing per
+  integrand evaluation, only a few times per evaluation of the rule (1,687
+  times for 201,695 evaluations of a two-component integrand); the
+  out-of-place form allocates its returned vector at every evaluation.
 
 ## Return codes
 
@@ -125,16 +127,29 @@ inspect `sol.resid`.
 
 | Field                | Meaning |
 |:---------------------|:--------|
-| `sol.stats.numevals` | Number of integrand evaluations performed |
+| `sol.stats.numevals` | Number of integrand evaluations of the cubature, the Fortran `NEVAL` (the estimate of `alpha` and the probe of an out-of-place integrand evaluate it besides) |
 | `sol.stats.ifail`    | Raw DECUHR `IFAIL` code (0 = success, 1 = budget hit, …) |
 | `sol.stats.message`  | Human-readable description of the `IFAIL` code |
 
 ## Automatic differentiation
 
 `solve` is differentiable through ForwardDiff with respect to integrand
-parameters, **including** when `alpha` is auto-estimated: the exponent is
-estimated on the primal integrand (it is a structural property of the
-singularity) and the integration is then carried out in the dual number type.
+parameters, nested derivatives included, and **including** when `alpha` is
+auto-estimated: the exponent is estimated on the primal integrand (it is a
+structural property of the singularity) and the integration is then carried
+out in the dual number type. It is not differentiable with respect to the
+bounds of the domain, which are refused with a message: map them in the
+integrand, `x = a + (b - a) .* t` with the Jacobian `prod(b - a)`, so that `a`
+and `b` are parameters.
+
+## Number types
+
+The rule's nodes, weights and error coefficients are `Float64`. Values of
+another floating-point type are carried through (`Float32` stays `Float32`,
+integers become `Float64`), but a `BigFloat` integrand is no more accurate
+than a `Float64` one: a quadratic, which the rule integrates exactly, comes out
+1e-16 off. Symbolic values are not supported: the algorithm is adaptive on
+numerical error estimates.
 """
 struct DecuhrAlgorithm <: SciMLBase.AbstractIntegralAlgorithm
     key::Int
@@ -149,7 +164,7 @@ end
 function DecuhrAlgorithm(;
         key = 0,
         singul = 1,
-        alpha = -2.0,   # ≤ -singul triggers auto-estimation
+        alpha = -Inf,   # ≤ -singul whatever singul: estimated
         logf = 0,
         wrksub = 50000,
         emax = 20,
@@ -182,12 +197,14 @@ function _primal_to_float(x::Real)
 end
 
 """
-    _decuhr_driver(ndim, numfun, a, b, minpts, maxpts, funsub,
+    _decuhr_driver(ndim, numfun, a, b, minpts, maxpts, funsub, ::Type{TV},
                    singul, alpha_in, logf_in, epsabs, epsrel,
                    key, wrksub, emax)
 
 Low-level driver.  Validates parameters, optionally estimates `alpha`, then
-calls `_adaptive_integrate!`.  Returns `(result, abserr, neval, ifail)`.
+calls `_adaptive_integrate!`.  `funsub(x, funvls)` writes the `numfun` values
+at `x` into `funvls`, which holds values of type `TV` (a dual-number type when
+differentiating).  Returns `(result, abserr, neval, ifail)`.
 """
 function _decuhr_driver(
         ndim::Int, numfun::Int,
@@ -323,6 +340,22 @@ function _make_funsub(f, p, ::Val{false}, numfun::Int, ::Type{TV}) where {TV}
     end
 end
 
+# The bounds of the domain as the Float64 coordinates the rule is built in. A
+# bound that carries derivatives has no such value: Integrals.jl passes dual
+# bounds on as they are, and the cubature is not differentiated with respect to
+# its own geometry.
+function _domain_bounds(v::AbstractVector)
+    any(x -> hasfield(typeof(x), :partials), v) && throw(
+        ArgumentError(
+            "DECUHR does not differentiate with respect to the bounds of the domain. " *
+                "Integrate over fixed bounds and map them in the integrand, " *
+                "x = a + (b - a) .* t with its Jacobian prod(b - a), so that a and b " *
+                "are parameters `p` of the integrand, which carry derivatives."
+        )
+    )
+    return Float64.(v)
+end
+
 function Integrals.__solvebp_call(
         cache::Integrals.IntegralCache,
         alg::DecuhrAlgorithm,
@@ -342,23 +375,26 @@ function Integrals.__solvebp_call(
             )
         )
     end
+    lb, ub = _domain_bounds(lb), _domain_bounds(ub)
     ndim = length(lb)
     f = cache.f   # IntegralFunction wrapping the user's integrand
     iip = SciMLBase.isinplace(f)
 
     # Detect numfun and the value type TV.  In-place integrands declare both via
     # their prototype (no probe evaluation); out-of-place integrands are probed
-    # once at the midpoint.  TV may be a dual-number type when differentiating
-    # w.r.t. parameters p.
+    # once at the midpoint, an evaluation that `numevals` does not count (it
+    # counts those of the cubature, as the Fortran NEVAL does).  TV is the
+    # floating-point type of the values — a weighted sum of integers is not an
+    # integer — and may be a dual-number type when differentiating w.r.t. p.
     if iip
         proto = f.integrand_prototype
         numfun = length(proto)
-        TV = eltype(proto)
+        TV = float(eltype(proto))
     else
         xmid = (lb .+ ub) ./ 2
         test_out = f(xmid, p)
         numfun = test_out isa Number ? 1 : length(test_out)
-        TV = test_out isa Number ? typeof(test_out) : eltype(test_out)
+        TV = float(test_out isa Number ? typeof(test_out) : eltype(test_out))
     end
 
     # Wrap SciML f → DECUHR funsub(x, funvls) through the function barrier.

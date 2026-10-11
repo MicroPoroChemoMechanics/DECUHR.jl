@@ -112,3 +112,37 @@ end
     )
     @test isapprox(sol.u, 4.0; rtol = 2.0e-2)
 end
+
+@testset "Float32 values: same bits, type-stable rule" begin
+    # The values are Float32 and the rule constants Float64, so the sums of the
+    # rule are Float64 from their first term; the accumulators start there too.
+    # The result is locked to the bits it had when they started in Float32 and
+    # turned Float64 at their first addition.
+    f(u, _) = Float32((u[1] * u[2])^(-0.5))
+    prob = IntegralProblem(f, (zeros(2), ones(2)))
+    sol = solve(prob, DecuhrAlgorithm(singul = 2, alpha = -0.5); abstol = 1.0e-6, reltol = 1.0e-5)
+    @test sol.u isa Float32
+    @test reinterpret(UInt32, sol.u) == 0x4080021b
+    @test sol.stats.numevals == 78975
+    f!(x, out) = (out[1] = Float32(x[1] * x[2]); nothing)
+    wtleng = 6
+    args = (
+        2, zeros(2), ones(2), wtleng, zeros(2, wtleng), zeros(5, wtleng), zeros(6), 1, f!,
+        zeros(3, wtleng), zeros(3, wtleng), zeros(2), zeros(Float32, 1, 8), zeros(2), zeros(2),
+        zeros(Float32, 1), zeros(Float32, 1), 1, zeros(Float32, 2), [1, 2],
+    )
+    @test (@inferred DECUHR._eval_rule!(args...)) isa Tuple{Int, Float32}
+end
+
+@testset "Integer-valued integrands" begin
+    # The values are summed with Float64 weights, so they are held as floats: an
+    # integer-valued integrand raised InexactError when its values were stored
+    # in the integer type of the probe evaluation.
+    sol = solve(IntegralProblem((u, _) -> 1, (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test sol.u isa Float64 && sol.u ≈ 1
+    solv = solve(IntegralProblem((u, _) -> [1, 2], (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test solv.u ≈ [1, 2]
+    ip = IntegralFunction((y, u, _) -> (y[1] = 3; nothing), zeros(Int, 1))
+    soli = solve(IntegralProblem(ip, (zeros(2), ones(2))), DecuhrAlgorithm(); abstol = 1.0e-8)
+    @test soli.u ≈ 3
+end

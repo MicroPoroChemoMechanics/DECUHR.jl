@@ -1,9 +1,78 @@
 # Changelog
 
-## Unreleased
+## v0.3.0 — 2026-10-11
+
+An audit of the package against the rules of its family — Julia written for
+speed, generic number types, a documentation that says what the code does —
+with a lock on the canonical results at every step. The default `alpha` was
+not estimated for `singul ≥ 3` and gave a result off by a hundred times the
+tolerance while reporting convergence; integer-valued integrands and dual
+domain bounds failed; the adaptive loop allocated at every evaluation of the
+rule. The six canonical results keep their bits.
+
+### Breaking changes
+
+- **The default `alpha` is estimated whatever `singul`.** The default was
+  `-2.0`, and the exponent is estimated only when `alpha ≤ -singul`; for
+  `singul ≥ 3` the default was therefore taken as the exponent of the
+  singularity, while the docstring and the manual said it was estimated. On
+  `|x|^(-3/2)` at the corner of the unit cube (`singul = 3`, exponent `-3/2`)
+  the result came back 1.03e-4 off, reported as converged, after 8001
+  evaluations, for a requested relative tolerance of 1e-6; estimated, the
+  exponent gives 7.7e-7 in 1651 evaluations, as the exact one does. The default
+  is now `-Inf`. For `singul ≤ 2` the old default was already estimated and
+  the estimate does not read the value it starts from, so those results are
+  unchanged to the bit.
+
+- **Julia 1.10 at least, and tested there.** The bound was `julia = "1.9"`,
+  and the CI tested from 1.12 only. The suite passes on 1.10 (the long-term
+  support release), the canonical cases with the same bits, and a CI job now
+  runs it there; 1.9, which nothing tested and which is no longer supported,
+  is no longer declared.
+
+- **Integrals.jl bounded to the minor releases tested**, `"~5.4, ~5.5"` where
+  it was `"5.4"`. The override of `Integrals.__solve` and the
+  `__solvebp_call` hook use internal functions of Integrals.jl, which a minor
+  release may change; a new one is admitted once tested.
+
+### Fixed
+
+- **An integrand with integer values raised `InexactError`.** The values were
+  stored in the type of the probe evaluation, so a constant integrand `1`, or
+  a vector of integers, filled integer arrays that the Float64-weighted sums of
+  the rule could not be written into. They are held in the floating-point type
+  of that type (`float`), which leaves Float32, Float64 and dual values as
+  they were.
+- **A domain bound carrying derivatives failed with a `MethodError`** deep in
+  the cubature (Integrals.jl passes dual bounds on as they are). It is refused
+  with a message that gives the way that works: mapping the domain onto fixed
+  bounds in the integrand, whose parameters then carry the derivative.
+- The docstring says what `sol.stats.numevals` counts: the evaluations of the
+  cubature, the Fortran `NEVAL`, not the estimate of `alpha` nor the probe of
+  an out-of-place integrand.
+
+### Performance
+
+- **Fewer allocations per evaluation of the rule.** `_eval_rule!` returned
+  the direction and the greatest error of its region through two `Ref`s,
+  which escaped into its dynamic call and were allocated with its views at
+  every evaluation; it returns them now, and the directions are integers. The
+  canonical cases C1 and C4 allocate 629 and 4,408 times where they allocated
+  10,342 and 47,417 times, with the same bits and the same times; a vector
+  integrand in place allocates 1,687 times over 201,695 evaluations where it
+  allocated 18,813 times. The integrand is deliberately not a type parameter
+  of the adaptive loop: so specialized, it compiled the loop again for every
+  new integrand, 2.3 s against 0.8 s. The accumulators of the rule are in the
+  type their sums take, so that Float32 values no longer make them
+  type-unstable.
 
 ### Documentation
 
+- The docstring of `DecuhrAlgorithm` states the number types: nested
+  derivatives with respect to parameters (now tested against exact
+  identities), not with respect to the bounds; `Float32` carried through,
+  integers made `Float64`, `BigFloat` no more accurate than `Float64` because
+  the rule's constants are `Float64`; symbolic values not supported.
 - The README and `CITATION.cff` said "2-D and 3-D integration". The driver
   accepts 2 to 15 dimensions, with the degree-9 and degree-7 rules beyond the
   dedicated 2-D and 3-D ones, and the test suite exercises them in 4-D. The

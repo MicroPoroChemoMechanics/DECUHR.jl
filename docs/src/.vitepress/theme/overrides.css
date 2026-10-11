@@ -39,7 +39,7 @@
   --vp-c-brand-soft: rgba(91, 164, 232, 0.16);
 }
 
-/* A measure of about 860 px, as before. VitePress defaults to 688 px. */
+/* A measure of about 860 px, where VitePress defaults to 688 px. */
 .VPDoc .content-container {
   max-width: 860px;
 }

@@ -532,20 +532,18 @@ end
 # ============================================================
 # DERLHR — evaluate integration rule over one sub-region, estimate error.
 #
-# Conventions (matching Fortran):
-#   direct_ref[] ≥ 0 → regular region, subdivision axis is written back
-#   direct_ref[] < 0 → singular region, ORDER is sorted by DIFF magnitude
-#   greate_ref[] ← max error over NUMFUN components
-#   null_work     :: Matrix{Float64}(numfun, 8) — work storage
+# Conventions (matching Fortran), `direct` being the region's direction:
+#   direct ≥ 0 → regular region, the subdivision axis is returned in its place
+#   direct < 0 → singular region, ORDER is sorted by DIFF magnitude
+# Returns `(direction, greate)`, `greate` the largest error over the NUMFUN
+# components. `null_work` (numfun × 8) is work storage in the value type.
 # ============================================================
 function _eval_rule!(
         ndim, center, hwidth, wtleng, g, w, errcof,
         numfun, funsub, scales, norms, x, null_work,
         fs_g, fs_x,
-        basval, rgnerr, direct_ref, greate_ref, diff, order
+        basval, rgnerr, direct::Int, diff, order
     )
-
-    direct = direct_ref[]
 
     # All loops below index with 1:ndim / 1:numfun / 1:wtleng into buffers the
     # caller allocated at exactly those sizes; @inbounds does not reach into
@@ -572,10 +570,13 @@ function _eval_rule!(
     end
 
     # Fourth differences along each axis (generators at positions 2 and 3)
-    # Accumulators are typed on the value type (duals when differentiating);
-    # for Float64 zero(eltype(diff)) === 0.0, so nothing changes numerically.
+    # Accumulators are in the type of the values promoted with the Float64 rule
+    # constants they are combined with (duals when differentiating), which is
+    # the type their sums take: a Float32 accumulator would turn Float64 at its
+    # first addition.
     ratio = (g[1, 3] / g[1, 2])^2
-    difmax = zero(eltype(diff))
+    Tacc = promote_type(eltype(diff), Float64)
+    difmax = zero(Tacc)
     @inbounds for i in 1:ndim
         x[i] = center[i] - hwidth[i] * g[1, 2]
         funsub(x, view(null_work, :, 5))
@@ -587,7 +588,7 @@ function _eval_rule!(
         funsub(x, view(null_work, :, 8))
         x[i] = center[i]
 
-        difsum = zero(eltype(diff))
+        difsum = zero(Tacc)
         for j in 1:numfun
             frthdf = abs(
                 2.0 * (1.0 - ratio) * rgnerr[j]
@@ -610,9 +611,7 @@ function _eval_rule!(
         end
         diff[i] = difsum
     end
-    if direct >= 0
-        direct_ref[] = Float64(divaxn)
-    end
+    new_direct = direct >= 0 ? divaxn : direct
 
     # Remaining generators (positions 4..wtleng) via fully symmetric sums
     fulsms = view(null_work, :, 5)    # reuse as output buffer
@@ -635,7 +634,7 @@ function _eval_rule!(
     greate = zero(eltype(rgnerr))
     @inbounds for j in 1:numfun
         for i in 1:3
-            search = zero(eltype(null_work))
+            search = zero(promote_type(eltype(null_work), Float64))
             for k in 1:wtleng
                 search = max(
                     search,
@@ -654,12 +653,10 @@ function _eval_rule!(
         basval[j] *= rgnvol
         greate = max(greate, rgnerr[j])
     end
-    greate_ref[] = greate
 
     # Sort ORDER[1..|direct|] by DIFF in descending order (for singular-region planning)
     if direct < 0
-        neg_direct = -round(Int, direct)
-        @inbounds for i in 2:neg_direct
+        @inbounds for i in 2:(-direct)
             cur = order[i]
             new_val = diff[cur]
             j = i - 1
@@ -670,5 +667,5 @@ function _eval_rule!(
             order[j + 1] = cur
         end
     end
-    return nothing
+    return new_direct, greate
 end

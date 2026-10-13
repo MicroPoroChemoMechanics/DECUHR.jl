@@ -230,7 +230,7 @@ function _decuhr_driver(
     logf = logf_in
 
     # --- Auto-estimate ALPHA (DECALP) when alpha ≤ -singul ---
-    if alpha <= -Float64(singul)
+    if alpha <= -singul
         alpha_ref = Ref(alpha)
         logf_ref = Ref(logf)
         x_work = zeros(Float64, ndim)
@@ -262,7 +262,7 @@ function _decuhr_driver(
         alpha = alpha_ref[]
         logf = logf_ref[]
 
-        if alpha <= -Float64(singul)
+        if alpha <= -singul
             return zeros(TV, numfun), zeros(TV, numfun), 0, 14
         end
     end
@@ -405,7 +405,7 @@ function Integrals.__solvebp_call(
         lb, ub,
         alg.minpts, maxiters,
         funsub, TV,
-        alg.singul, Float64(alg.alpha), alg.logf,
+        alg.singul, alg.alpha, alg.logf,
         abstol, reltol,
         alg.key, alg.wrksub, alg.emax
     )

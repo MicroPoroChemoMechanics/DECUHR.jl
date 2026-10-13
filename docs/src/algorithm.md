@@ -82,10 +82,12 @@ Practical guidance:
 ## Generic value type and automatic differentiation
 
 All internal arrays that accumulate integrand values are parameterized on a
-value type `TV`, inferred at runtime from a test evaluation:
+value type `TV`: the floating-point type of one evaluation at the midpoint of
+the domain for an out-of-place integrand, of the prototype's elements for an
+in-place one.
 
 ```julia
-TV = typeof(f(midpoint, p))   # e.g. Float64 or ForwardDiff.Dual{...}
+TV = float(eltype(f(midpoint, p)))   # e.g. Float64 or ForwardDiff.Dual{...}
 ```
 
 This means the algorithm works out of the box with **dual numbers** when
@@ -95,11 +97,12 @@ differentiating through the integral with respect to parameters `p`:
 using ForwardDiff, Integrals, DECUHR
 
 f = (u, p) -> exp(-p[1] * (u[1]^2 + u[2]^2))
-prob = IntegralProblem(f, (zeros(2), ones(2)))
+prob = IntegralProblem(f, (zeros(2), ones(2)), [1.0])
 
 # Derivative of the integral w.r.t. p[1] at p₀ = [1.0]
-dI_dp = ForwardDiff.gradient(p -> solve(prob, DecuhrAlgorithm(alpha=0.0);
-                                         abstol=1e-8).u, [1.0])
+dI_dp = ForwardDiff.gradient(
+    p -> solve(remake(prob; p), DecuhrAlgorithm(alpha = 0.0); abstol = 1e-8).u, [1.0]
+)
 ```
 
 !!! note "Alpha auto-estimation and AD"

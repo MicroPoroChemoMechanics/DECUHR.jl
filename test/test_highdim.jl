@@ -3,7 +3,7 @@
 
 @testset "4-D polynomial exactness (keys 3 and 4)" begin
     # ∑xᵢ² has degree 2 → exact for the degree-9 and degree-7 rules.
-    f(u, _) = u[1]^2 + u[2]^2 + u[3]^2 + u[4]^2
+    f(u, _) = sum(abs2, u)
     prob = IntegralProblem(f, (zeros(4), ones(4)))
     for key in (0, 3, 4)   # key = 0 selects key 3 for ndim ≥ 4
         sol = solve(prob, DecuhrAlgorithm(key = key); abstol = 1.0e-10)

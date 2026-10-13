@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.3.1 — 2026-10-13
+
+A patch release that changes no result: the derivative example of the
+documentation runs, the examples print what they compute, and two conversions
+that did nothing are gone. The six canonical results keep their bits.
+
+### Fixed
+
+- **The derivative example of the algorithm page failed.** It built its
+  problem without parameters, so the integrand's `p[1]` raised on
+  `NullParameters`, and the closure handed to `ForwardDiff` ignored the `p` it
+  was differentiated in. It now passes `[1.0]` and solves
+  `remake(prob; p)`, and the page says how the value type is inferred: the
+  floating-point type of one evaluation at the midpoint, or of the
+  prototype's elements for an in-place integrand.
+- **The basic examples:** §9 printed the exact integral alone, as if it had
+  been computed, and now prints the computed one beside it; §8 reuses the
+  integrand of §7 instead of redefining it under another name; the comment
+  that confirmed an estimate by "tightening" `maxiters` now says to raise it.
+  The generated page is regenerated.
+
+### Changed
+
+- Two `Float64(...)` conversions are dropped from the driver: `alg.alpha` is
+  already a `Float64`, and `alpha <= -singul` compares a `Float64` with an
+  `Int` exactly. The adaptive loops of the Fortran port are kept as loops:
+  written as broadcasts they measured 1 to 2 % slower on the fast cases, and
+  they match the reference Fortran line for line.
+- Two test integrands are written `sum(abs2, u)`.
+
 ## v0.3.0 — 2026-10-11
 
 An audit of the package against the rules of its family — Julia written for

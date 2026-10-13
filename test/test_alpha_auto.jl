@@ -39,7 +39,7 @@ end
     # result came back 1e-4 off, reported as converged, after 8001 evaluations.
     # Estimated, the exponent gives what the exact one gives. The reference is
     # nested QuadGK at rtol = 1e-12.
-    f(u, _) = (u[1]^2 + u[2]^2 + u[3]^2)^(-3 / 4)
+    f(u, _) = sum(abs2, u)^(-3 / 4)
     prob = IntegralProblem(f, (zeros(3), ones(3)))
     kw = (abstol = 1.0e-6, reltol = 1.0e-6, maxiters = 2_000_000)
     auto = solve(prob, DecuhrAlgorithm(singul = 3); kw...)

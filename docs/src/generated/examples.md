@@ -179,13 +179,12 @@ At ``\lambda = 0``:
 ````@example examples
 using ForwardDiff
 
-f8 = (u, p) -> (u[1] * u[2])^(-0.5) * exp(-p[1] * (u[1] + u[2]))
-prob8 = IntegralProblem(f8, (zeros(2), ones(2)), [0.0])
+# The integrand of §7, `prob7`.
 
 # Function I(λ). Here λ does not change the singularity structure, so we may
 # either supply alpha explicitly or let it be auto-estimated — both differentiate.
 I(λ) = solve(
-    remake(prob8, p = [λ]),
+    remake(prob7, p = [λ]),
     DecuhrAlgorithm(singul = 2, alpha = -0.5);
     abstol = 1.0e-7
 ).u
@@ -209,7 +208,7 @@ runs in the dual-number type.
 
 ````@example examples
 Iauto(λ) = solve(
-    remake(prob8, p = [λ]),
+    remake(prob7, p = [λ]),
     DecuhrAlgorithm(singul = 2);   # alpha auto-estimated
     abstol = 1.0e-7, maxiters = 300_000
 ).u
@@ -261,7 +260,7 @@ exact_dIdλ = -2 / ((1 + μ) * (2 + μ))
 # dI/dμ = d/dμ [1/(1+μ)²] = -2/(1+μ)³
 exact_dIdμ = -2 / (1 + μ)^3
 
-println("I  ≈ ", exact_I)
+println("I  ≈ ", Ivec(p0), "  (exact = ", exact_I, ")")
 println("∇I ≈ ", grad)
 println("exact ∇I = [", exact_dIdλ, ", ", exact_dIdμ, "]")
 println("|err|    = ", abs.(grad .- [exact_dIdλ, exact_dIdμ]))
@@ -326,7 +325,7 @@ Note what `resid` says next to the true error below. The estimate is not a
 guaranteed bound: here it is smaller than the actual error by an order of
 magnitude. Treat it as an indication of how far the extrapolation has
 converged, not as a certificate — and where the value matters, confirm it by
-tightening `maxiters` until `u` stops moving.
+raising `maxiters` until `u` stops moving.
 
 ````@example examples
 sol10 = solve(prob, DecuhrAlgorithm(singul = 2, alpha = -0.5); abstol = 1.0e-12)

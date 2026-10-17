@@ -25,10 +25,13 @@ jobs:
       fail-fast: false
       matrix:
         version:
-          # 'lts' is the lower bound of `julia` in Project.toml, tested.
-          - 'lts'
-          - '1.12'
-          - '1.13'
+          # Aliases, so that no release of Julia calls for an edit here: 'min' is
+          # the latest patch of the oldest minor that `julia` admits in
+          # Project.toml, '1' the latest release, which also measures the
+          # coverage (keep it, or move the coverage conditions below with it),
+          # and 'pre' the latest prerelease.
+          - 'min'
+          - '1'
           - 'pre'
         os:
           - ubuntu-latest
@@ -37,10 +40,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
       - uses: julia-actions/setup-julia@v3
+        id: julia
         with:
           version: ${{ matrix.version }}
           arch: ${{ matrix.arch }}
       - uses: julia-actions/cache@v3
+        with:
+          # The key holds the matrix, whose aliases stay the same when Julia
+          # changes: it names the installed version too, so that a new release
+          # starts its own depot instead of carrying the old `compiled/` along.
+          cache-name: julia-cache;workflow=${{ github.workflow }};job=${{ github.job }};julia=${{ steps.julia.outputs.julia-version }}
       # The Pkg server intermittently advertises a General tree hash that its
       # CDN then answers with a 404, which kills the first `Pkg.add` of a cold
       # depot before any of this repository's code runs.  Install the registry
@@ -66,9 +75,10 @@ jobs:
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
         with:
-          # Instrument only the primary job: coverage disables precompilation
-          # caching and would slow down every other matrix entry for nothing.
-          coverage: ${{ matrix.version == '1.12' }}
+          # Instrument only the job on the latest release: coverage disables
+          # precompilation caching and would slow down every other matrix entry
+          # for nothing.
+          coverage: ${{ matrix.version == '1' }}
       # The stock action, not the `.github/scripts/coverage.jl` that TensND,
       # ChemistryLab and MeanFieldHomogenization run. That script exists because
       # `amend_coverage_from_src!` counts methods generated in `@eval` loops as
@@ -76,9 +86,9 @@ jobs:
       # way. This package has no `@eval` in `src/`, so the stock action is
       # faithful here. Switch to the shared script if that ever changes.
       - uses: julia-actions/julia-processcoverage@v1
-        if: matrix.version == '1.12'
+        if: matrix.version == '1'
       - uses: codecov/codecov-action@v7
-        if: matrix.version == '1.12'
+        if: matrix.version == '1'
         with:
           files: lcov.info
           token: ${{ secrets.CODECOV_TOKEN }}

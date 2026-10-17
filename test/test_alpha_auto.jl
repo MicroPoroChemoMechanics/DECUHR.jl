@@ -22,6 +22,21 @@ end
     @test isapprox(sol.u, 2.0; rtol = 1.0e-5)
 end
 
+@testset "A ratio table exactly constant over its first entries" begin
+    # 1/r at the corner: its values along the diagonal are powers of two apart,
+    # so the ratio table holds -1 exactly and its extrapolation meets second
+    # differences that are exactly zero. A logarithmic factor, active below
+    # r = 2^-20 only, sends DECALP into the log elimination all the same, which
+    # must step over those zeros rather than divide by them. The factor adds
+    # (π/2)·2^-20/(20 ln 2) to ∫∫ 1/r = 2 asinh(1) over the unit square.
+    f(u, _) = (r = hypot(u[1], u[2]); max(1.0, log2(1 / r) / 20) / r)
+    prob = IntegralProblem(f, (zeros(2), ones(2)))
+    sol = solve(prob, DecuhrAlgorithm(singul = 2); abstol = 1.0e-8, reltol = 1.0e-7)
+    exact = 2 * asinh(1.0) + π * 2.0^-21 / (20 * log(2))
+    @test sol.retcode == RC.Success
+    @test isapprox(sol.u, exact; rtol = 1.0e-6)
+end
+
 @testset "Auto-estimated alpha matches the explicit-alpha result" begin
     f(u, _) = (u[1] * u[2])^(-0.5)
     prob = IntegralProblem(f, (zeros(2), ones(2)))

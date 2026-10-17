@@ -100,6 +100,19 @@ end
     @test isapprox(sols.u, 4.0; rtol = 1.0e-3)   # correct even if retcode == MaxIters
 end
 
+@testset "minpts holds the solve until that many evaluations" begin
+    # A smooth integrand meets the tolerance early; `minpts` keeps the solve
+    # subdividing until it has spent at least that many evaluations.
+    f(u, _) = sin(u[1]) * cos(u[2])
+    prob = IntegralProblem(f, (zeros(2), fill(π / 2, 2)))
+    free = solve(prob, DecuhrAlgorithm(); abstol = 1.0e-9)
+    n = 10 * free.stats.numevals
+    held = solve(prob, DecuhrAlgorithm(minpts = n); abstol = 1.0e-9, maxiters = 2n)
+    @test held.retcode == RC.Success
+    @test held.stats.numevals >= n
+    @test isapprox(held.u, 1.0; atol = 1.0e-9)   # (∫₀^{π/2} sin)(∫₀^{π/2} cos) = 1
+end
+
 @testset "Extrapolation weighted-correction branch (small emax)" begin
     # emax = 3 forces NUMU > EMAX on a strongly singular integrand, which
     # exercises the weighted-correction branch (and its BETA-index clamp).

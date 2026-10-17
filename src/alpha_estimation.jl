@@ -146,7 +146,13 @@ function _estimate_alpha!(
             nb -= 2
             itw = 2 * bdg - nb   # increments by 2 each step
 
-            # Estimate convergence order KEST
+            # Estimate convergence order KEST, and the BGD stopping criterion.
+            # Both concern a later stage, so the last one (NB = 0) has neither:
+            # the Fortran sets KEST = 0 there, which only makes the criterion
+            # fire and set SIGNAL = 0 -- the T(0) that `max(0, signal)` below
+            # takes anyway when it never fired. The criterion reads KEST, ITW and
+            # SIGNAL only, none of which the tableau update changes, so testing
+            # it before the update rather than after selects the same index.
             if nb > 0
                 denom1 = t_arr[nb + 2] + t_arr[nb] - 2.0 * t_arr[nb + 1]
                 denom2 = t_arr[nb + 3] + t_arr[nb + 1] - 2.0 * t_arr[nb + 2]
@@ -155,8 +161,9 @@ function _estimate_alpha!(
                 term2 = abs(denom2) > 0.0 ?
                     (t_arr[nb + 3] - t_arr[nb + 2]) / denom2 : 0.0
                 kest = -1.0 - 1.0 / (term2 - term1)
-            else
-                kest = 0.0
+                if abs(kest - itw + 1) > 1.0 && signal < 0
+                    signal = max(0, nb - 2)
+                end
             end
 
             # Update tableau entries T(0)..T(NB)
@@ -170,11 +177,6 @@ function _estimate_alpha!(
                 else
                     t_arr[j_val + 1] = t_arr[j_val + 2]
                 end
-            end
-
-            # BGD stopping criterion
-            if abs(kest - itw + 1) > 1.0 && signal < 0
-                signal = max(0, nb - 2)
             end
 
             (nb == signal || nb <= 0) && break

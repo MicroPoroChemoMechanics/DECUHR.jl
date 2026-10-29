@@ -1,5 +1,18 @@
 # Changelog
 
+## v0.4.0 — 2026-10-29
+
+A minor release that changes no code: DECUHR now requires Julia 1.13.
+
+### Breaking changes
+
+- **Julia 1.13 or later** (`julia = "1.13"`, was `1.10`). The MPCM packages
+  stop testing older versions of Julia, so that a test suite covers what it
+  claims and the CI does not spend its time on versions no user of these
+  packages runs; the `min` job of the CI now runs 1.13. Under SemVer below
+  1.0, this minor release is breaking whatever the API did: a package bounded
+  at `DECUHR = "0.3"` must widen its bound to accept 0.4.
+
 ## v0.3.1 — 2026-10-13
 
 A patch release that changes no result: the derivative example of the

@@ -24,7 +24,7 @@
 """
     DECUHR
 
-Pure-Julia port of the DECUHR algorithm (Espelid & Genz, 1994) for automatic
+Pure-Julia port of the DECUHR algorithm [EspelidGenz1994](@cite) for automatic
 integration of functions with vertex singularities over hyper-rectangular
 regions.
 
@@ -36,7 +36,7 @@ through the `SciMLBase.AbstractIntegralAlgorithm` interface.
 ```julia
 using Integrals, DECUHR
 
-# ∫∫₀¹ (x·y)^{-0.5} dx dy = π²/4
+# ∫∫₀¹ (x·y)^{-0.5} dx dy = 4
 f = (u, p) -> (u[1]*u[2])^(-0.5)
 prob = IntegralProblem(f, (zeros(2), ones(2)))
 sol  = solve(prob, DecuhrAlgorithm(singul=2, alpha=-0.5); abstol=1e-8)
@@ -44,11 +44,8 @@ sol  = solve(prob, DecuhrAlgorithm(singul=2, alpha=-0.5); abstol=1e-8)
 
 ## References
 
-- T.O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic Integration
-  of Singular Functions over a Hyperrectangular Region*,
-  Numerical Algorithms 8 (1994), pp. 201-220.
-- T.O. Espelid, *On integrating Vertex Singularities using Extrapolation*,
-  BIT 34 (1994), pp. 62-79.
+The algorithm is that of [EspelidGenz1994](@citet); the extrapolation toward a
+vertex singularity, that of [Espelid1994](@citet).
 
 ## License
 

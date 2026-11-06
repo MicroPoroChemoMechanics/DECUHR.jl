@@ -27,12 +27,13 @@ via the `SciMLBase.AbstractIntegralAlgorithm` interface.
 
 - Integration on hyper-rectangles of dimension 2 to 15: dedicated degree-13
   (2-D) and degree-11 (3-D) rules, degree-9 and degree-7 rules in any
-  dimension.
+  dimension (Genz & Malik, 1983).
 - Vertex singularity handling with user-supplied or auto-estimated
-  exponent ``\alpha`` (singular strength).
+  exponent ``\alpha`` (singular strength), the estimate accelerated by the
+  modified Aitken formula of Bjørstad et al. (1981).
 - Logarithmic singularities (`logf = k` for ``(\log)^k`` weights).
 - Vector-valued integrands (any `NUMFUN`).
-- Richardson extrapolation on sub-region averages.
+- Richardson extrapolation on sub-region averages (Espelid, 1994).
 - Differentiable with ForwardDiff with respect to integrand parameters,
   including when ``\alpha`` is auto-estimated.
 - Reports a `retcode` compatible with Integrals.jl (`Success`,
@@ -83,16 +84,6 @@ julia --project=docs docs/make.jl
 
 HTML output is placed in `docs/build/`.
 
-## References
-
-- T.O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic
-  Integration of Singular Functions over a Hyperrectangular Region*,
-  Numerical Algorithms **8** (1994) 201–220.
-  <https://doi.org/10.1007/BF02142691>
-- T.O. Espelid, *On integrating Vertex Singularities using
-  Extrapolation*, BIT **34** (1994) 62–79.
-  <https://doi.org/10.1007/BF01935016>
-
 ## License
 
 The Julia port (this package) is released under the MIT License — see
@@ -139,3 +130,19 @@ researcher at [Cerema](https://www.cerema.fr/en) in the research team
 The Fortran 77 → Julia translation and parts of the subsequent codebase
 were developed with the assistance of Anthropic's *Claude Code*, under
 the author's review and numerical validation.
+
+## References
+
+- Bjørstad, P., Dahlquist, G., Grosse, E. (1981). Extrapolation of asymptotic
+  expansions by a modified Aitken δ²-formula. *BIT*, **21**(1), 56–65.
+  <https://doi.org/10.1007/BF01934071>
+- Espelid, T. O. (1994). On integrating vertex singularities using
+  extrapolation. *BIT*, **34**(1), 62–79.
+  <https://doi.org/10.1007/BF01935016>
+- Espelid, T. O., Genz, A. (1994). DECUHR: an algorithm for automatic
+  integration of singular functions over a hyperrectangular region.
+  *Numerical Algorithms*, **8**(2), 201–220.
+  <https://doi.org/10.1007/BF02142691>
+- Genz, A. C., Malik, A. A. (1983). An imbedded family of fully symmetric
+  numerical integration rules. *SIAM Journal on Numerical Analysis*,
+  **20**(3), 580–588. <https://doi.org/10.1137/0720038>

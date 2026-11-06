@@ -2,7 +2,7 @@
 
 ## Problem class
 
-DECUHR targets integrals of the form
+DECUHR [EspelidGenz1994](@cite) targets integrals of the form
 
 ```math
 I = \int_{\mathbf{a}}^{\mathbf{b}} f(\mathbf{x})\, d\mathbf{x}
@@ -38,7 +38,7 @@ The algorithm combines three ideas:
    - *Regular region*: bisect along the axis with the largest fourth
      difference.
 
-2. **Richardson extrapolation** (DEXTHR).
+2. **Richardson extrapolation** (DEXTHR) [Espelid1994](@cite).
    Each time the singular region is subdivided, a new term ``U_k`` of a
    geometric series is appended.  The tableau is extrapolated to accelerate
    convergence from ``O(h^\alpha)`` to machine precision.
@@ -46,12 +46,13 @@ The algorithm combines three ideas:
 3. **Automatic singularity estimation** (DECALP).
    When `alpha ≤ -singul` (the default), the exponent is estimated by
    evaluating the integrand along a ray toward the singular vertex and
-   extrapolating the log-ratio sequence with Aitken / Bjorstad–Grosse–Dahlquist
-   acceleration.
+   extrapolating the log-ratio sequence with the modified Aitken ``\delta^2``
+   formula of [BjorstadDahlquistGrosse1981](@citet).
 
 ## Integration rules
 
-Four Genz–Malik-style fully-symmetric rules are available, selected via `key`:
+Four fully symmetric rules are available, selected via `key`; the two that serve
+any dimension are those of [GenzMalik1983](@citet).
 
 | `key` | Rule | Dimensions | Points per region |
 |:-----:|------|:----------:|:-----------------:|

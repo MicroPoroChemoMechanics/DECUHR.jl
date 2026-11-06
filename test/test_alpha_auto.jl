@@ -1,5 +1,5 @@
 # DECALP paths: automatic estimation of the singularity exponent alpha and
-# automatic detection of the logarithmic factor (Björstad–Grosse–Dahlquist
+# automatic detection of the logarithmic factor (Bjørstad–Dahlquist–Grosse
 # elimination), which only run when the supplied alpha satisfies alpha ≤ -singul.
 
 @testset "2-D vertex singularity, alpha auto-estimated" begin

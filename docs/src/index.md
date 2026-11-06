@@ -1,6 +1,6 @@
 # DECUHR.jl
 
-Pure-Julia port of the **DECUHR** algorithm (Espelid & Genz, 1994) for automatic
+Pure-Julia port of the **DECUHR** algorithm [EspelidGenz1994](@cite) for automatic
 adaptive integration of functions with **homogeneous vertex singularities** over
 hyper-rectangular regions.
 
@@ -41,13 +41,9 @@ println(sol.retcode) # Success
 - **Generic value type** `TV`: works with dual numbers (ForwardDiff) for
   automatic differentiation with respect to parameters `p`.
 
-## References
-
-- T. O. Espelid and A. Genz, *DECUHR: An Algorithm for Automatic Integration
-  of Singular Functions over a Hyperrectangular Region*,
-  Numerical Algorithms **8** (1994), pp. 201–220.
-- T. O. Espelid, *On Integrating Vertex Singularities using Extrapolation*,
-  BIT **34** (1994), pp. 62–79.
+The algorithm, its rules and its extrapolation are described on the
+[Algorithm](algorithm.md) page; the works it rests on are listed on the
+[References](@ref references) page.
 
 ## License and upstream notice
 

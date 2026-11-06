@@ -113,3 +113,30 @@
 .vp-doc .table-wrapper {
   overflow-x: auto;
 }
+
+/* Citation hints: the card that pops when an author-year citation is hovered.
+ * Positioned from the theme's script, so only its appearance is set here. */
+.decuhr-cite-hint {
+  position: absolute;
+  z-index: 100;
+  visibility: hidden;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition: opacity 0.14s ease, transform 0.14s ease;
+  pointer-events: none;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid var(--vp-c-divider);
+  border-left: 3px solid var(--decuhr-accent);
+  border-radius: 6px;
+  background: var(--vp-c-bg-elv);
+  color: var(--vp-c-text-1);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.16);
+  font-size: 0.86rem;
+  line-height: 1.5;
+}
+
+.decuhr-cite-hint.is-visible {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}

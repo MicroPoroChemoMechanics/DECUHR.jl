@@ -1,5 +1,6 @@
 using Documenter
 using DECUHR
+using DocumenterCitations
 using DocumenterVitepress
 
 # Generates the Examples page (plus a companion notebook and cleaned script)
@@ -20,6 +21,81 @@ DocMeta.setdocmeta!(
     :(using DECUHR);
     recursive = true,
 )
+
+# Author-year citations, as in TensND, MeanFieldHomogenization and ChemistryLab:
+# a `[3]` tells the reader nothing without a trip to the References page, and
+# hovering a citation shows the full entry (`theme/index.ts`).
+bib = CitationBibliography(
+    joinpath(@__DIR__, "src", "references.bib");
+    style = :authoryear,
+)
+
+# ── The bibliography is formatted NOW ────────────────────────────────────────
+#
+# DocumenterCitations formats the entries only at its last stage, once every
+# page has been expanded and every example run. A malformed entry would then
+# kill the build after all that work. Calling exactly what the late stage calls
+# moves that failure to the first seconds. A LaTeX escape the TeX parser does not
+# implement is the usual cause: write the character bare inside braces instead.
+let failures = String[]
+    for (key, entry) in bib.entries
+        try
+            DocumenterCitations.format_bibliography_reference(:authoryear, entry)
+        catch err
+            push!(failures, "  $key : " * sprint(showerror, err))
+        end
+    end
+    isempty(failures) || error(
+        "docs/src/references.bib has $(length(failures)) entry/entries " *
+            "DocumenterCitations cannot format. This would otherwise kill the " *
+            "build at its LAST stage:\n" *
+            join(failures, "\n")
+    )
+end
+
+# ── Stopgap: CitationSiteNode in the Markdown writer ─────────────────────────
+#
+# GUARDED, and the guard is what makes one file serve both versions.
+#
+# `CitationSiteNode` exists only in DocumenterCitations 1.5, while
+# DocumenterVitepress declares a weak dependency `DocumenterCitations = "1 - 1.4"`
+# — an upstream cap, so the docs environment resolves to 1.4 and the name is not
+# there. Referring to it unconditionally is an `UndefVarError` raised before the
+# first page is built. On 1.4 the citations need no help at all: the node is what
+# 1.5 introduced.
+#
+# When DocumenterVitepress raises its cap, widening the bound in
+# `docs/Project.toml` is the only edit needed — this method starts applying again
+# on its own.
+if isdefined(DocumenterCitations, :CitationSiteNode)
+# DocumenterCitations 1.5 wraps every expanded citation in a `CitationSiteNode`,
+# whose only purpose is to give the citation an HTML anchor so the bibliography
+# can link back to it. Its own docstring calls it "transparent in any output
+# format other than HTML", and both the LaTeX writer and MDFlatten implement it
+# as "render my children".
+#
+# DocumenterVitepress 0.3.5 ships a DocumenterCitations extension, but it covers
+# only `BibliographyNode`. With no method for `CitationSiteNode`, the writer
+# falls through to its generic branch, which prints `Markdown.plain(element)` —
+# so every citation would come out as the literal text
+# `DocumenterCitations.CitationSiteNode("<key>-cite-1")`.
+#
+# The same one-line treatment as the other non-HTML writers. Remove this once
+# DocumenterVitepress covers the node upstream.
+    function DocumenterVitepress.render(
+            io::IO,
+            mime::MIME"text/plain",
+            node::Documenter.MarkdownAST.Node,
+            ::DocumenterCitations.CitationSiteNode,
+            page,
+            doc;
+            kwargs...,
+        )
+        return DocumenterVitepress.render(
+            io, mime, node, node.children, page, doc; kwargs...,
+        )
+    end
+end
 
 # ── Stopgap: heading anchors that contain LaTeX ──────────────────────────────
 # DocumenterVitepress builds each heading as `## <text> {#<slug>}`, where the
@@ -135,12 +211,15 @@ makedocs(;
         deploy_url = "https://MicroPoroChemoMechanics.github.io/DECUHR.jl",
         description = "Adaptive cubature for vertex singularities in Julia",
     ),
+    plugins = [bib],
     pages = [
         "Home" => "index.md",
         "Algorithm" => "algorithm.md",
         "Examples" => "generated/examples.md",
         "API Reference" => "api.md",
         "License" => "license.md",
+
+        "References" => "references.md",
     ],
     checkdocs = :exports,
     # No blanket `warnonly`: with `checkdocs = :exports` the missing-docs check

@@ -29,7 +29,7 @@
 #
 # References:
 #   Espelid & Genz, Numerical Algorithms 8 (1994) 201-220
-#   Bjorstad, Grosse & Dahlquist, BIT 21 (1981)
+#   Bjørstad, Dahlquist & Grosse, BIT 21 (1981) 56-65
 
 # ============================================================
 # _estimate_alpha! — port of DECALP
@@ -138,7 +138,7 @@ function _estimate_alpha!(
         # Logarithmic term present
         logf_ref[] = 1
 
-        # Step 3b : Bjorstad-Grosse-Dahlquist log-elimination
+        # Step 3b : Bjørstad-Dahlquist-Grosse log-elimination
         # NB decreases by 2 from 2*BDG-2 until convergence or NB = 0
         signal = -1
         nb = 2 * bdg   # immediately decremented to 2*bdg-2 in loop

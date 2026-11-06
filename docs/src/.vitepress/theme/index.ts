@@ -43,6 +43,73 @@ async function activateScripts(container: Element): Promise<void> {
   }
 }
 
+// ── Citation hints ──────────────────────────────────────────────────────────
+// An author-year citation, `(Espelid and Genz, 1994)`, names the work but not where it
+// appeared; that needs a trip to the References page. Hovering one pops the
+// full entry instead.
+//
+// The entries are read from the References page itself, fetched once on the
+// first hover and indexed by the anchor DocumenterCitations puts on each item,
+// so there is nothing to keep in sync: whatever the bibliography renders is
+// what the hint shows.
+let bibIndex: Promise<Map<string, string>> | null = null
+
+async function loadBibliography(base: string): Promise<Map<string, string>> {
+  const map = new Map<string, string>()
+  try {
+    const html = await (await fetch(`${base}references`)).text()
+    const doc = new DOMParser().parseFromString(html, 'text/html')
+    for (const a of Array.from(doc.querySelectorAll('a[id]'))) {
+      const item = a.closest('li')
+      if (item) map.set(a.id, (item.textContent || '').trim().replace(/\s+/g, ' '))
+    }
+  } catch {
+    /* offline or missing page: hints simply stay silent */
+  }
+  return map
+}
+
+function citationKey(a: HTMLAnchorElement): string | null {
+  const href = a.getAttribute('href') || ''
+  const i = href.indexOf('/references#')
+  return i === -1 ? null : decodeURIComponent(href.slice(i + '/references#'.length))
+}
+
+function installCitationHints(base: string): void {
+  const tip = document.createElement('div')
+  tip.className = 'decuhr-cite-hint'
+  tip.setAttribute('role', 'tooltip')
+  document.body.appendChild(tip)
+  let current: HTMLAnchorElement | null = null
+
+  const hide = () => { tip.classList.remove('is-visible'); current = null }
+
+  document.addEventListener('mouseover', async (e) => {
+    const a = (e.target as HTMLElement | null)?.closest?.('a[href*="/references#"]') as HTMLAnchorElement | null
+    if (!a || a === current) return
+    const key = citationKey(a)
+    if (!key) return
+    current = a
+    if (!bibIndex) bibIndex = loadBibliography(base)
+    const text = (await bibIndex).get(key)
+    if (!text || current !== a) return
+    tip.textContent = text
+    tip.classList.add('is-visible')
+    // Place it under the citation, nudged back inside the viewport if needed.
+    const r = a.getBoundingClientRect()
+    const w = Math.min(460, window.innerWidth - 24)
+    tip.style.width = `${w}px`
+    tip.style.left = `${Math.max(12, Math.min(r.left, window.innerWidth - w - 12))}px`
+    tip.style.top = `${r.bottom + window.scrollY + 8}px`
+  })
+
+  document.addEventListener('mouseout', (e) => {
+    const a = (e.target as HTMLElement | null)?.closest?.('a[href*="/references#"]')
+    if (a && a === current) hide()
+  })
+  window.addEventListener('scroll', hide, { passive: true })
+}
+
 export const Theme: ThemeConfig = {
   extends: DefaultTheme,
   Layout() {
@@ -58,6 +125,9 @@ export const Theme: ThemeConfig = {
   },
   enhanceApp({ app, router, siteData }) {
     enhanceAppWithTabs(app);
+    if (typeof window !== "undefined") {
+      installCitationHints(siteData.value.base)
+    }
     app.component('VersionPicker', VersionPicker);
     app.component('AuthorBadge', AuthorBadge)
     app.component('Authors', Authors)

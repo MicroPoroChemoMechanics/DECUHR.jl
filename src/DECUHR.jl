@@ -323,7 +323,7 @@ A function barrier keyed on `Val(iip)` so each of the three integrand shapes
 closure.  `funvls` may be a SubArray (column-view from rules.jl).
 
 The in-place form `f(y, u, p)` writes into `funvls` directly and is the
-zero-allocation route for vector integrands; the out-of-place vector form
+zero-allocation way for vector integrands; the out-of-place vector form
 necessarily allocates its return value at every evaluation.
 """
 function _make_funsub(f, p, ::Val{true}, numfun::Int, ::Type{TV}) where {TV}
